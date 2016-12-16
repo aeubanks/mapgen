@@ -32,6 +32,7 @@ namespace mg_util {
 	}
 
 	int Random::rand_int_inc(int lo, int hi) {
+		assert(lo <= hi);
 		return std::uniform_int_distribution<int>(lo, hi)(generator_);
 	}
 
