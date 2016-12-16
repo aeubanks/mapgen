@@ -1,0 +1,6 @@
+Stopwatch
+Perlin/Simplex/Worley Noise Maps
+BSP Map
+Maze Map
+DiamondSquare Map (make sure to change x_inc, y_inc for wrapped maps) (test what happens when there is leftover x_inc/y_inc when the other one is 0)
+Delaunay Triangulation
