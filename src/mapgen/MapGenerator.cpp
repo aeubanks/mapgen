@@ -5,6 +5,6 @@
 #include "MapGenerator.hpp"
 
 namespace mapgen {
-	template<>
-	void _gen(Map &) { }
+template <>
+void _gen(Map &) {}
 }

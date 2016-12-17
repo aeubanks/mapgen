@@ -4,6 +4,4 @@
 
 #include "MapTile.hpp"
 
-namespace mapgen {
-
-}
+namespace mapgen {}

@@ -10,23 +10,23 @@
 #include <memory>
 
 namespace sdl2 {
-	class SDLWindowWrapper {
-	public:
-		// create a window with the given parameters
-		SDLWindowWrapper(std::string title, int width, int height);
-		SDLWindowWrapper(std::string title, int x, int y, int width, int height, Uint32 flags);
+class SDLWindowWrapper {
+  public:
+    // create a window with the given parameters
+    SDLWindowWrapper(std::string title, int width, int height);
+    SDLWindowWrapper(std::string title, int x, int y, int width, int height,
+                     Uint32 flags);
 
-		// the width/height of the window
-		int width();
-		int height();
+    // the width/height of the window
+    int width();
+    int height();
 
-		// the underlying SDL_Window *
-		SDL_Window * get();
+    // the underlying SDL_Window *
+    SDL_Window * get();
 
-	private:
-		std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window_;
-	};
+  private:
+    std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window_;
+};
 }
 
-
-#endif //MAPGEN_SDLWINDOWWRAPPER_HPP
+#endif // MAPGEN_SDLWINDOWWRAPPER_HPP

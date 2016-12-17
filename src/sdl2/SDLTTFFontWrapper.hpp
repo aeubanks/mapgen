@@ -14,17 +14,17 @@
 #include <memory>
 
 namespace sdl2 {
-	class SDLTTFFontWrapper {
-	public:
-		SDLTTFFontWrapper(string file_name, int size);
-		SDLTextureWrapper render_font_solid(SDLRendererWrapper & renderer, string str, SDL_Color color);
+class SDLTTFFontWrapper {
+  public:
+    SDLTTFFontWrapper(string file_name, int size);
+    SDLTextureWrapper render_font_solid(SDLRendererWrapper & renderer, string str,
+                                        SDL_Color color);
 
-		TTF_Font * get();
+    TTF_Font * get();
 
-	private:
-		std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font_;
-	};
+  private:
+    std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font_;
+};
 }
 
-
-#endif //MAPGEN_SDLTTFFONTWRAPPER_HPP
+#endif // MAPGEN_SDLTTFFONTWRAPPER_HPP

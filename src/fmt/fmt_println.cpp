@@ -5,7 +5,5 @@
 #include "fmt_println.hpp"
 
 namespace fmt {
-	void println() {
-		print("\n");
-	}
+void println() { print("\n"); }
 }

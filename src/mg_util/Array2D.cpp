@@ -4,6 +4,4 @@
 
 #include "Array2D.hpp"
 
-namespace mg_util {
-
-}
+namespace mg_util {}

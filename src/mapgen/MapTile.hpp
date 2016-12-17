@@ -5,18 +5,17 @@
 #ifndef MAP_GEN_MAPTILE_H
 #define MAP_GEN_MAPTILE_H
 
-#include "mapgen_global.hpp"
 #include "MapTileType.hpp"
+#include "mapgen_global.hpp"
 
 namespace mapgen {
-	// a class representing a tile on a map
-	class MapTile {
-	public:
-		MapTile(MapTileType t) : type(t) { }
+// a class representing a tile on a map
+class MapTile {
+  public:
+    MapTile(MapTileType t) : type(t) {}
 
-		MapTileType type;
-	};
+    MapTileType type;
+};
 }
 
-
-#endif //MAP_GEN_MAPTILE_H
+#endif // MAP_GEN_MAPTILE_H

@@ -11,14 +11,13 @@
 #include <string>
 
 namespace sdl2 {
-	using std::string;
+using std::string;
 
-	class sdl2_error : public std::runtime_error {
-	public:
-//		sdl2_error(std::string err);
-		sdl2_error(std::string err, const char * (*get_error)() = SDL_GetError);
-	};
+class sdl2_error : public std::runtime_error {
+  public:
+    //		sdl2_error(std::string err);
+    sdl2_error(std::string err, const char * (*get_error)() = SDL_GetError);
+};
 }
 
-
-#endif //MAPGEN_SDL2_GLOBAL_HPP
+#endif // MAPGEN_SDL2_GLOBAL_HPP

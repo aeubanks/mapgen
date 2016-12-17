@@ -11,10 +11,11 @@
 //
 //#include <array>
 //
-//namespace sdl2 {
+// namespace sdl2 {
 //	class SDLButton {
 //	public:
-//		SDLButton(SDLRendererWrapper & renderer, string file_name, std::array<SDL_Rect, 4> rects);
+//		SDLButton(SDLRendererWrapper & renderer, string file_name,
+//std::array<SDL_Rect, 4> rects);
 //
 //		void handle_event(SDL_Event & event);
 //

@@ -8,17 +8,19 @@
 #include "mapgen_global.hpp"
 
 namespace mapgen {
-	// an enum for each of the possible tile types
-	enum class MapTileType {
-		Wall, Ground, Grass, Bush, Forest, Mountain
-	};
+// an enum for each of the possible tile types
+enum class MapTileType { Wall,
+                         Ground,
+                         Grass,
+                         Bush,
+                         Forest,
+                         Mountain };
 
-	// the name of a tile type
-	string MapTileType_to_string(MapTileType tile);
+// the name of a tile type
+string MapTileType_to_string(MapTileType tile);
 
-	// the char representing a tile type
-	char MapTileType_to_char(MapTileType tile);
+// the char representing a tile type
+char MapTileType_to_char(MapTileType tile);
 }
 
-
-#endif //MAP_GEN_MAPTILETYPE_H
+#endif // MAP_GEN_MAPTILETYPE_H
