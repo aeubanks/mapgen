@@ -1,3 +1,0 @@
-mkdir build ; cd build
-cmake -G__GENERATOR__ -DCMAKE_BUILD_TYPE=DEBUG/RELEASE ..
-for Windows 32-Bit: use mingw32_shell.bat, __GENERATOR__="MSYS Makefiles"
