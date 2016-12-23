@@ -22,9 +22,6 @@
 #include "sdl2/SDLTextureWrapper.hpp"
 #include "sdl2/SDLWindowWrapper.hpp"
 
-#include "lodepng/lodepng.hpp"
-#include "lodepng/lodepng_map.hpp"
-
 #include "mappng/mappng.hpp"
 
 #include "Box2D/Box2D.h"
@@ -329,7 +326,7 @@ void png_main() {
 
     int tile_size = 4;
 
-    lodepng::save_map_as_image("/Users/aeubanks/Downloads/test.png", map, tile_size);
+    mappng::map_to_png("test.png", map, tile_size);
 }
 
 std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {

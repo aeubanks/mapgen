@@ -40,7 +40,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/Box2D/)
 
 set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-file(GLOB SRC_FILES src/mapgen/*.cpp src/fmt/*.cpp src/json/*.cpp src/mg_util/*.cpp src/mappng/*.cpp src/lodepng/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
+file(GLOB SRC_FILES src/mapgen/*.cpp src/fmt/*.cpp src/json/*.cpp src/mg_util/*.cpp src/mappng/*.cpp src/mapbytes/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
 
 set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SRC_FILES})

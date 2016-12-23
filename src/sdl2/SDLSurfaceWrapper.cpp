@@ -4,7 +4,7 @@
 
 #include "SDLSurfaceWrapper.hpp"
 
-#include "lodepng/lodepng_map.hpp"
+#include "mapbytes/mapbytes.hpp"
 
 #include "SDL2/SDL_image.h"
 
@@ -51,7 +51,7 @@ SDLSurfaceWrapper::SDLSurfaceWrapper(std::vector<unsigned char> && pixels,
     : SDLSurfaceWrapper(pixels, width, height) {}
 
 SDLSurfaceWrapper::SDLSurfaceWrapper(mapgen::Map & map, int tile_size)
-    : SDLSurfaceWrapper(lodepng::map_to_image(map, tile_size),
+    : SDLSurfaceWrapper(mapbytes::map_to_bytes(map, tile_size),
                         map.width() * tile_size, map.height() * tile_size) {}
 
 SDLSurfaceWrapper::SDLSurfaceWrapper(string file_name)
