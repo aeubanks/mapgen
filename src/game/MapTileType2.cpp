@@ -3,8 +3,12 @@
 //
 
 #include "MapTileType2.hpp"
-#include "mg_util/text_processing.hpp"
+
 #include <fstream>
+#include <cassert>
+
+#include "mg_util/text_processing.hpp"
+
 
 namespace game {
 int MapTileType2::cur_id;

@@ -25,6 +25,8 @@
 #include "lodepng/lodepng.hpp"
 #include "lodepng/lodepng_map.hpp"
 
+#include "mappng/mappng.hpp"
+
 #include "Box2D/Box2D.h"
 
 mapgen::Map some_map() {
@@ -38,29 +40,21 @@ mapgen::Map some_map() {
     mg_util::Random rand;
 
     Randomizer randomizer(rand, ground_chance);
-    RoomMaker<MakeRoomDeciderAlways> room_maker(rand, 3, width / 10, width /
-                                                                         5,
-                                                height / 10, height / 5);
-    CellularAutomaton<CARuleAliveDeadLimit> ca(rand, generations,
-                                               CARuleAliveDeadLimit(alive, dead));
-    SectionRemover<SectionRemoverSmall> ground_remover(rand,
-                                                       MapTileType::Ground, MapTileType::Wall, SectionRemoverSmall(50));
+    RoomMaker<MakeRoomDeciderAlways> room_maker(rand, 3, width / 10, width / 5, height / 10, height / 5);
+    CellularAutomaton<CARuleAliveDeadLimit> ca(rand, generations, CARuleAliveDeadLimit(alive, dead));
+    SectionRemover<SectionRemoverSmall> ground_remover(rand, MapTileType::Ground, MapTileType::Wall, SectionRemoverSmall(50));
     SectionRemover<SectionRemoverSmall> wall_remover(rand, MapTileType::Wall, MapTileType::Ground, SectionRemoverSmall(200));
 
-    return create_map(width, height, false, randomizer, room_maker, ca,
-                      ground_remover, wall_remover);
+    return create_map(width, height, false, randomizer, room_maker, ca, ground_remover, wall_remover);
 }
 
 void sdl_main2() {
     int window_width = 800;
     int window_height = 600;
 
-    sdl2::SDLWindowWrapper window("mapgen window", SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED, window_width, window_height, SDL_WINDOW_SHOWN |
-                                                                                            SDL_WINDOW_RESIZABLE);
+    sdl2::SDLWindowWrapper window("mapgen window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
-    sdl2::SDLRendererWrapper renderer(window, SDL_RENDERER_PRESENTVSYNC |
-                                                  SDL_RENDERER_ACCELERATED);
+    sdl2::SDLRendererWrapper renderer(window, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     renderer.set_draw_color(0xFF / 2, 0xFF / 2, 0xFF / 2, 0xFF);
 
     // texture1
@@ -88,8 +82,7 @@ void sdl_main2() {
     sdl2::SDLTTFFontWrapper font("resources/lazy.ttf", 28);
     auto text_texture = font.render_font_solid(renderer, "HELLO!", {0, 0xFF / 3, 0xFF / 2, 0xFF});
 
-    auto joystick_texture = font.render_font_solid(renderer, "JOYSTICK!",
-                                                   {0, 0, 0, 0xFF});
+    auto joystick_texture = font.render_font_solid(renderer, "JOYSTICK!", {0, 0, 0, 0xFF});
 
     SDL_Event event;
 
@@ -109,10 +102,8 @@ void sdl_main2() {
     texture2.set_blend_mode(SDL_BLENDMODE_BLEND);
 
     std::string mouse_str("wow"), mouse_pos_str("wow");
-    auto mouse_texture = font.render_font_solid(renderer, mouse_str, {0, 0,
-                                                                      0, 0xFF});
-    auto mouse_pos_texture = font.render_font_solid(renderer, mouse_str, {0,
-                                                                          0, 0, 0xFF});
+    auto mouse_texture = font.render_font_solid(renderer, mouse_str, {0, 0, 0, 0xFF});
+    auto mouse_pos_texture = font.render_font_solid(renderer, mouse_str, {0, 0, 0, 0xFF});
 
     int k;
     SDL_GetKeyboardState(&k);
@@ -128,8 +119,7 @@ void sdl_main2() {
                 case SDL_MOUSEMOTION:
                     int mouse_x, mouse_y;
                     SDL_GetMouseState(&mouse_x, &mouse_y);
-                    mouse_pos_str = fmt::format("{}, {}", mouse_x,
-                                                mouse_y);
+                    mouse_pos_str = fmt::format("{}, {}", mouse_x, mouse_y);
                     mouse_pos_change = true;
                     break;
                 case SDL_MOUSEBUTTONDOWN:
@@ -173,12 +163,10 @@ void sdl_main2() {
                             angle -= 10.0;
                             break;
                         case SDLK_y:
-                            flip =
-                                static_cast<decltype(flip)>(flip ^ SDL_FLIP_VERTICAL);
+                            flip = static_cast<decltype(flip)>(flip ^ SDL_FLIP_VERTICAL);
                             break;
                         case SDLK_h:
-                            flip =
-                                static_cast<decltype(flip)>(flip ^ SDL_FLIP_HORIZONTAL);
+                            flip = static_cast<decltype(flip)>(flip ^ SDL_FLIP_HORIZONTAL);
                             break;
                         default:
                             break;
@@ -190,27 +178,22 @@ void sdl_main2() {
         }
 
         auto key_state = SDL_GetKeyboardState(NULL);
-        if (key_state[SDL_SCANCODE_LEFT] &&
-            !key_state[SDL_SCANCODE_RIGHT]) {
+        if (key_state[SDL_SCANCODE_LEFT] && !key_state[SDL_SCANCODE_RIGHT]) {
             rect_x -= move_dist;
-        } else if (!key_state[SDL_SCANCODE_LEFT] &&
-                   key_state[SDL_SCANCODE_RIGHT]) {
+        } else if (!key_state[SDL_SCANCODE_LEFT] && key_state[SDL_SCANCODE_RIGHT]) {
             rect_x += move_dist;
         }
         if (key_state[SDL_SCANCODE_UP] && !key_state[SDL_SCANCODE_DOWN]) {
             rect_y -= move_dist;
-        } else if (!key_state[SDL_SCANCODE_UP] &&
-                   key_state[SDL_SCANCODE_DOWN]) {
+        } else if (!key_state[SDL_SCANCODE_UP] && key_state[SDL_SCANCODE_DOWN]) {
             rect_y += move_dist;
         }
 
         if (mouse_change) {
-            mouse_texture = font.render_font_solid(renderer, mouse_str,
-                                                   {0, 0, 0, 0xFF});
+            mouse_texture = font.render_font_solid(renderer, mouse_str, {0, 0, 0, 0xFF});
         }
         if (mouse_pos_change) {
-            mouse_pos_texture = font.render_font_solid(renderer,
-                                                       mouse_pos_str, {0, 0, 0, 0xFF});
+            mouse_pos_texture = font.render_font_solid(renderer, mouse_pos_str, {0, 0, 0, 0xFF});
         }
 
         for (int i = 0; i < SDL_NumJoysticks(); ++i) {
@@ -224,23 +207,15 @@ void sdl_main2() {
                 auto ctrl = SDL_GameControllerOpen(i);
                 // auto joy =
                 SDL_GameControllerGetJoystick(ctrl);
-                auto x =
-                    static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl,
-                                                                   SDL_CONTROLLER_AXIS_LEFTX));
-                auto y =
-                    static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl,
-                                                                   SDL_CONTROLLER_AXIS_LEFTY));
-                auto x_norm = static_cast<double>(x) / (0x10000 >>
-                                                        1);
-                auto y_norm = static_cast<double>(y) / (0x10000 >>
-                                                        1);
+                auto x = static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTX));
+                auto y = static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTY));
+                auto x_norm = static_cast<double>(x) / (0x10000 >> 1);
+                auto y_norm = static_cast<double>(y) / (0x10000 >> 1);
                 auto scale = 1.0;
-                if (SDL_GameControllerGetButton(ctrl,
-                                                SDL_CONTROLLER_BUTTON_LEFTSHOULDER)) {
+                if (SDL_GameControllerGetButton(ctrl, SDL_CONTROLLER_BUTTON_LEFTSHOULDER)) {
                     scale *= 0.5;
                 }
-                if (SDL_GameControllerGetButton(ctrl,
-                                                SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) {
+                if (SDL_GameControllerGetButton(ctrl, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) {
                     scale *= 2.0;
                 }
                 rect_x += move_dist * x_norm * scale;
@@ -262,8 +237,7 @@ void sdl_main2() {
         renderer.fill();
 
         auto clip_rect = clips[clips_idx / 4];
-        renderer.copy({0, 0, clip_rect.w, clip_rect.h}, clips_texture,
-                      clip_rect, angle, flip);
+        renderer.copy({0, 0, clip_rect.w, clip_rect.h}, clips_texture, clip_rect, angle, flip);
         ++clips_idx;
         clips_idx %= clips.size() * 4;
 
@@ -272,32 +246,15 @@ void sdl_main2() {
         renderer.set_draw_color(0, 0xFF, 0);
 
         renderer.draw_line(0, 0, window.width(), window.height());
-        renderer.copy({window.width() / 2 - texture1.width(),
-                       window.height() / 2, texture1.width(), texture1.height()},
-                      texture1);
-        renderer.copy({window.width() / 2, window.height() / 2 -
-                                               texture2.height(),
-                       texture2.width(), texture2.height()},
-                      texture2);
+        renderer.copy({window.width() / 2 - texture1.width(), window.height() / 2, texture1.width(), texture1.height()}, texture1);
+        renderer.copy({window.width() / 2, window.height() / 2 - texture2.height(), texture2.width(), texture2.height()}, texture2);
 
-        renderer.copy({window.width() / 2, window.height() / 2,
-                       text_texture.width(), text_texture.height()},
-                      text_texture);
+        renderer.copy({window.width() / 2, window.height() / 2, text_texture.width(), text_texture.height()}, text_texture);
 
-        renderer.copy({window.width() - mouse_texture.width(),
-                       window.height() / 2 - mouse_texture.height() / 2, mouse_texture.width(),
-                       mouse_texture.height()},
-                      mouse_texture);
-        renderer.copy({window.width() - mouse_pos_texture.width(),
-                       window.height() / 2 + mouse_pos_texture.height() / 2,
-                       mouse_pos_texture.width(), mouse_pos_texture.height()},
-                      mouse_pos_texture);
+        renderer.copy({window.width() - mouse_texture.width(), window.height() / 2 - mouse_texture.height() / 2, mouse_texture.width(), mouse_texture.height()}, mouse_texture);
+        renderer.copy({window.width() - mouse_pos_texture.width(), window.height() / 2 + mouse_pos_texture.height() / 2, mouse_pos_texture.width(), mouse_pos_texture.height()}, mouse_pos_texture);
         if (SDL_NumJoysticks() > 0) {
-            renderer.copy({0, window.height() -
-                                  joystick_texture.height(),
-                           joystick_texture.width(),
-                           joystick_texture.height()},
-                          joystick_texture);
+            renderer.copy({0, window.height() - joystick_texture.height(), joystick_texture.width(), joystick_texture.height()}, joystick_texture);
         }
 
         renderer.present();
@@ -341,33 +298,23 @@ void ca_main() {
                 fmt::println(line);
                 for (int i = 0; i < repeat_count; ++i) {
                     using namespace mapgen;
-                    Randomizer randomizer(rand,
-                                          ground_chance);
-                    RoomMaker<MakeRoomDeciderAlways>
-                        room_maker(rand, 3, width / 10, width / 5, height / 10, height / 5);
-                    CellularAutomaton<CARuleAliveDeadLimit> ca(rand,
-                                                               generations, CARuleAliveDeadLimit(alive, dead));
-                    SectionRemover<SectionRemoverSmall>
-                        section_remover(rand, MapTileType::Ground, MapTileType::Wall,
-                                        SectionRemoverSmall(50));
-                    SectionRemover<SectionRemoverSmall>
-                        wall_remover(rand, MapTileType::Wall, MapTileType::Ground,
-                                     SectionRemoverSmall(200));
+                    Randomizer randomizer(rand, ground_chance);
+                    RoomMaker<MakeRoomDeciderAlways> room_maker(rand, 3, width / 10, width / 5, height / 10, height / 5);
+                    CellularAutomaton<CARuleAliveDeadLimit> ca(rand, generations, CARuleAliveDeadLimit(alive, dead));
+                    SectionRemover<SectionRemoverSmall> section_remover(rand, MapTileType::Ground, MapTileType::Wall, SectionRemoverSmall(50));
+                    SectionRemover<SectionRemoverSmall> wall_remover(rand, MapTileType::Wall, MapTileType::Ground, SectionRemoverSmall(200));
 
-                    auto map = create_map(width, height, false,
-                                          randomizer, room_maker, ca, section_remover, wall_remover);
+                    auto map = create_map(width, height, false, randomizer, room_maker, ca, section_remover, wall_remover);
                     fmt::println_obj(map);
 
-                    int num_walls =
-                        map.num_tiles_of_type(MapTileType::Wall);
-                    int num_ground =
-                        map.num_tiles_of_type(MapTileType::Ground);
-                    fmt::println("num wall:   {}",
-                                 num_walls);
-                    fmt::println("num ground: {}",
-                                 num_ground);
+                    int num_walls = map.num_tiles_of_type(MapTileType::Wall);
+                    int num_ground = map.num_tiles_of_type(MapTileType::Ground);
+                    fmt::println("num wall:   {}", num_walls);
+                    fmt::println("num ground: {}", num_ground);
                     time.tick_and_print_millis();
                     fmt::println(line);
+
+                    mappng::map_to_png(fmt::format("map-{}-{}-{}-{}.png", alive, dead, generations, wrap, i), map, 16);
                 }
             }
         }
@@ -382,8 +329,7 @@ void png_main() {
 
     int tile_size = 4;
 
-    lodepng::save_map_as_image("/Users/aeubanks/Downloads/test.png", map,
-                               tile_size);
+    lodepng::save_map_as_image("/Users/aeubanks/Downloads/test.png", map, tile_size);
 }
 
 std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
@@ -397,12 +343,10 @@ std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
 }
 
 constexpr int Box2DToPixelsRatio = 32;
-constexpr float32 PixelsToBox2DRatio =
-    1.0f / static_cast<float32>(Box2DToPixelsRatio);
+constexpr float32 PixelsToBox2DRatio = 1.0f / static_cast<float32>(Box2DToPixelsRatio);
 
 mapgen::Coord2D box2d_to_pixels(float32 x, float32 y) {
-    return mapgen::Coord2D(static_cast<int>(x * Box2DToPixelsRatio),
-                           static_cast<int>(y * Box2DToPixelsRatio));
+    return mapgen::Coord2D(static_cast<int>(x * Box2DToPixelsRatio), static_cast<int>(y * Box2DToPixelsRatio));
 }
 
 mapgen::Coord2D box2d_to_pixels(const b2Vec2 & v) {
@@ -410,8 +354,7 @@ mapgen::Coord2D box2d_to_pixels(const b2Vec2 & v) {
 }
 
 b2Vec2 pixels_to_box2d(int x, int y) {
-    return b2Vec2(static_cast<float32>(x) * PixelsToBox2DRatio,
-                  static_cast<float32>(y) * PixelsToBox2DRatio);
+    return b2Vec2(static_cast<float32>(x) * PixelsToBox2DRatio, static_cast<float32>(y) * PixelsToBox2DRatio);
 }
 
 b2Vec2 pixels_to_box2d(const mapgen::Coord2D & c) {
@@ -425,12 +368,9 @@ void sdl_main() {
     int window_width = 800;
     int window_height = 600;
 
-    sdl2::SDLWindowWrapper window(
-        "mapgen window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    sdl2::SDLWindowWrapper window("mapgen window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
-    sdl2::SDLRendererWrapper renderer(window, SDL_RENDERER_PRESENTVSYNC |
-                                                  SDL_RENDERER_ACCELERATED);
+    sdl2::SDLRendererWrapper renderer(window, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     renderer.set_draw_color(0xFF / 2, 0xFF / 2, 0xFF / 2, 0xFF);
 
     game::MapTileType2::init();
@@ -447,13 +387,11 @@ void sdl_main() {
     b2BodyDef player_body_def;
     player_body_def.fixedRotation = true;
     player_body_def.type = b2_dynamicBody;
-    player_body_def.position =
-        pixels_to_box2d(-tile_size_pixels, -tile_size_pixels);
+    player_body_def.position = pixels_to_box2d(-tile_size_pixels, -tile_size_pixels);
     player_body_def.linearDamping = 1.0;
 
     b2PolygonShape player_shape;
-    auto player_box_size =
-        pixels_to_box2d(player_size_pixels, player_size_pixels);
+    auto player_box_size = pixels_to_box2d(player_size_pixels, player_size_pixels);
     player_shape.SetAsBox(player_box_size.x / 2, player_box_size.y / 2);
 
     b2FixtureDef player_fixture_def;
@@ -554,20 +492,15 @@ void sdl_main() {
             //window.height() / 2 - player_pos.y, tile_size, tile_size},
             //tiles_texture, {x_tile * tile_size, y_tile * tile_size,
             //tile_size_pixels, tile_size_pixels});
-            renderer.copy({coord.x * tile_size_pixels, coord.y * tile_size_pixels,
-                           tile_size_pixels, tile_size_pixels},
-                          tiles_texture,
-                          {x_tile * tile_size_pixels, y_tile * tile_size_pixels,
-                           tile_size_pixels, tile_size_pixels});
+            renderer.copy({coord.x * tile_size_pixels, coord.y * tile_size_pixels, tile_size_pixels, tile_size_pixels}, tiles_texture, {x_tile * tile_size_pixels, y_tile * tile_size_pixels, tile_size_pixels, tile_size_pixels});
         }
 
         // draw player
         renderer.set_draw_color(0xFF, 0, 0);
-        //		renderer.draw_rect({window.width() / 2 - player_size_pixels / 2,
+        //renderer.draw_rect({window.width() / 2 - player_size_pixels / 2,
         //window.height() / 2 - player_size_pixels / 2, player_size_pixels,
         //player_size_pixels});
-        renderer.draw_rect(
-            {player_pos.x, player_pos.y, player_size_pixels, player_size_pixels});
+        renderer.draw_rect({player_pos.x, player_pos.y, player_size_pixels, player_size_pixels});
 
         renderer.present();
 
@@ -589,8 +522,7 @@ int main(int argc, char ** argv) {
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
     char path[PATH_MAX];
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path,
-                                          PATH_MAX)) {
+    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX)) {
         puts("CFURLGetFileSystemRepresentation fail\n");
     }
     CFRelease(resourcesURL);
@@ -604,7 +536,8 @@ int main(int argc, char ** argv) {
     try {
         std::vector<std::string> args(argv, argv + argc);
 
-        sdl_main();
+        //sdl_main();
+        ca_main();
     } catch (sdl2::sdl2_error & e) {
         fmt::println(stderr, "sdl2_error: {}", e.what());
         return 1;

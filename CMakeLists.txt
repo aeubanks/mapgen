@@ -30,6 +30,7 @@ if (CYGWIN)
     message(STATUS "CYGWIN")
 endif ()
 
+find_package(PNG REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -39,7 +40,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/Box2D/)
 
 set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-file(GLOB SRC_FILES src/mapgen/*.cpp src/fmt/*.cpp src/json/*.cpp src/mg_util/*.cpp src/lodepng/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
+file(GLOB SRC_FILES src/mapgen/*.cpp src/fmt/*.cpp src/json/*.cpp src/mg_util/*.cpp src/mappng/*.cpp src/lodepng/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
 
 set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SRC_FILES})
@@ -48,7 +49,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE TRUE)
 set(INCLUDE_DIRS src/ ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} lib/Box2D/)
 include_directories(${INCLUDE_DIRS})
 
-set(LINK_LIBS ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY})
+set(LINK_LIBS ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY} ${PNG_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 target_link_libraries(${PROJECT_NAME} Box2D)
 
