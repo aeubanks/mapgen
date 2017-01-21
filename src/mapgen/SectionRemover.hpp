@@ -49,9 +49,9 @@ void SectionRemover<Fill>::modify_map(Map & map) {
         num_sections++;
     };
     map.sections_for_each_moore(type_to_fill_, remove_if_small);
-    fmt::print("num sections:         {}\n", num_sections);
-    fmt::print("num sections removed: {}\n", num_sections_removed);
-    fmt::print("num sections kept:    {}\n", num_sections - num_sections_removed);
+    mg_log::info("num sections:         {}", num_sections);
+    mg_log::info("num sections removed: {}", num_sections_removed);
+    mg_log::info("num sections kept:    {}", num_sections - num_sections_removed);
 }
 
 // returns (section.size() * factor < num tiles)

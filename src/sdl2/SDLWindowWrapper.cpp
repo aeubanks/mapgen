@@ -4,7 +4,6 @@
 
 #include "SDLWindowWrapper.hpp"
 
-#include "fmt/format.hpp"
 #include "mg_util/mg_util_global.hpp"
 
 namespace sdl2 {

@@ -1,10 +1,7 @@
-//
-// Created by Arthur Eubanks on 24/12/15.
-//
-
 #include "mg_math.hpp"
 
-#include <assert.h>
+#include "mg_util_global.hpp"
+#include "mg_log/Log.hpp"
 
 namespace mg_util {
 int pow2roundup(int x) {
@@ -28,7 +25,12 @@ int pow2rounddown(int x) {
 }
 
 void clamp_inc(int & x, int lo, int hi) {
-    assert(lo <= hi);
+    if constexpr (DEBUG) {
+        if (lo <= hi) {
+            mg_log::error("invalid arguments to clamp_inc");
+            throw mg_error("");
+        }
+    }
     if (x < lo) {
         x = lo;
     } else if (x > hi) {

@@ -30,8 +30,6 @@ class CellularAutomaton : public MapGenerator {
 template <typename CARule>
 void CellularAutomaton<CARule>::modify_map(Map & map) {
     for (int i = 0; i < generations_; i++) {
-        //		fmt::print("{}{}\n", map, string(static_cast<unsigned int>(width),
-        //'-'));
         generation(map);
     }
 }

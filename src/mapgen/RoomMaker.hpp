@@ -36,13 +36,12 @@ class RoomMaker : public MapGenerator {
 
 template <class MakeRoomDecider>
 void RoomMaker<MakeRoomDecider>::modify_map(Map & map) {
-    assert(min_width_ > 0);
-    assert(min_height_ > 0);
-    assert(min_width_ <= max_width_);
-    assert(min_height_ <= max_height_);
-    assert(max_width_ < map.width());
-    assert(max_height_ < map.height());
-    assert(tries_ > 0);
+    if constexpr (DEBUG) {
+        if (min_width_ <= 0 || min_height_ <= 0 || min_width_ > max_width_ || min_height_ > max_height_ || max_width_ > map.width() || max_height_ > map.height() || tries_ <= 0) {
+            mg_log::error("invalid state for RoomMaker::modify_map");
+            throw mg_error("");
+        }
+    }
 
     for (int cur_try = 0; cur_try < tries_; ++cur_try) {
         int width = rand_.rand_int_exc(min_width_, max_width_ + 1);
@@ -85,8 +84,13 @@ class MakeRoomDeciderNoOverlap {
         : xborder_(xborder), yborder_(yborder) {}
 
     bool operator()(Map & map, int x_start, int y_start, int width, int height) {
-        assert(xborder_ >= 0);
-        assert(yborder_ >= 0);
+        if constexpr (DEBUG) {
+            if (xborder_ < 0 || yborder_ < 0) {
+                mg_log::error("invalid xborder/yborder: ", xborder_, ", ", yborder_);
+                throw mg_error("");
+            }
+        }
+
         int x_start_with_border = x_start - xborder_;
         int y_start_with_border = y_start - yborder_;
         int x_end_with_border = x_start + width + xborder_;

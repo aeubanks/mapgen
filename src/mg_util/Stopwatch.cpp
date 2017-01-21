@@ -4,7 +4,7 @@
 
 #include "Stopwatch.hpp"
 
-#include "fmt/format.hpp"
+#include "mg_log/Log.hpp"
 
 namespace mg_util {
 Stopwatch::Stopwatch() : begin_time_(now()), prev_time_(now()) {}
@@ -24,20 +24,20 @@ Stopwatch::time_dif_count_t Stopwatch::total_time() {
 }
 
 void Stopwatch::tick_and_print_millis() {
-    fmt::print("time: {} millis\n", time());
+    mg_log::info("time: ", time(), " millis");
     tick();
 }
 
 void Stopwatch::tick_and_print_millis(string & str) {
-    fmt::print("{} time: {} millis\n", str, time());
+    mg_log::info(str, " time: ", time(), " millis");
     tick();
 }
 
 void Stopwatch::print_total_time_millis() {
-    fmt::print("total time: {} millis\n", total_time());
+    mg_log::info("total time: ", total_time(), " millis");
 }
 
 void Stopwatch::print_total_time_millis(string & str) {
-    fmt::print("{} total time: {} millis\n", str, total_time());
+    mg_log::info(str, " total time: ", total_time(), " millis");
 }
 }

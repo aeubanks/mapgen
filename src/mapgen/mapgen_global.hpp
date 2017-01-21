@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "fmt/fmt_println.hpp"
-#include "fmt/format.hpp"
 #include "mg_util/Array2D.hpp"
 #include "mg_util/Coord2D.hpp"
 #include "mg_util/mg_util_global.hpp"

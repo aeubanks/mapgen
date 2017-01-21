@@ -42,8 +42,12 @@ Map::Map(int width, int height, bool wrap)
 
 Map::Map(int width, int height, bool wrap, MapTileType type)
     : map_(width, height, type), wrap_(wrap) {
-    assert(width > 0);
-    assert(height > 0);
+    if constexpr (DEBUG) {
+        if (width <= 0 || height <= 0) {
+            mg_log::error("invalid width/height: ", width, ", ", height);
+            throw mg_error("");
+        }
+    }
 }
 
 bool Map::in_bounds(Coord2D coord) const {
@@ -51,8 +55,12 @@ bool Map::in_bounds(Coord2D coord) const {
 }
 
 Coord2D Map::wrapped_coord(Coord2D coord) const {
-    assert(in_bounds(coord));
-    assert(wrap_);
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord) || !wrap_) {
+            mg_log::error("invalid state in Map::wrapped_coord");
+            throw mg_error("");
+        }
+    }
 
     coord.x %= width();
     if (coord.x < 0) {
@@ -66,7 +74,12 @@ Coord2D Map::wrapped_coord(Coord2D coord) const {
 }
 
 MapTile & Map::operator[](Coord2D coord) {
-    assert(in_bounds(coord));
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::operator[]");
+            throw mg_error("");
+        }
+    }
 
     if (wrap_) {
         coord = wrapped_coord(coord);
@@ -88,9 +101,13 @@ int Map::num_tiles_of_type(MapTileType type) const {
     return count;
 }
 
-int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord,
-                                     int dist) const {
-    assert(in_bounds(coord));
+int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord, int dist) const {
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::num_neighbors_of_type_moore[]");
+            throw mg_error("");
+        }
+    }
 
     int count = 0;
     neighbors_moore_for_each(coord, dist, [&count, type, this](Coord2D neighbor) {
@@ -105,9 +122,13 @@ int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord) const {
     return num_neighbors_of_type_moore(type, coord, 1);
 }
 
-int Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord,
-                                           int dist) const {
-    assert(in_bounds(coord));
+int Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, int dist) const {
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::num_neighbors_of_type_von_neumann[]");
+            throw mg_error("");
+        }
+    }
 
     int count = 0;
     neighbors_von_neumann_for_each(coord, dist,
@@ -133,10 +154,13 @@ vector<Coord2D> Map::find_section_moore(Coord2D coord) const {
 }
 
 vector<Coord2D>
-Map::find_section_helper(Coord2D coord,
-                         vector<Coord2D> (Map::*neighbors_func)(Coord2D)
-                             const) const {
-    assert(in_bounds(coord));
+Map::find_section_helper(Coord2D coord, vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) const {
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::find_section_helper[]");
+            throw mg_error("");
+        }
+    }
 
     vector<Coord2D> ret;
     Array2D<bool> visited(width(), height());
@@ -170,10 +194,13 @@ void Map::flood_fill_moore(Coord2D coord, MapTileType flood_type) {
     flood_fill_helper(coord, flood_type, &Map::neighbors_moore);
 }
 
-void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type,
-                            vector<Coord2D> (Map::*neighbors_func)(Coord2D)
-                                const) {
-    assert(in_bounds(coord));
+void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type, vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) {
+    if constexpr (DEBUG) {
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::flood_fill_helper[]");
+            throw mg_error("");
+        }
+    }
 
     MapTileType overwrite_type = operator[](coord).type;
     if (overwrite_type ==
@@ -243,10 +270,17 @@ void Map::neighbors_moore_for_each(Coord2D coord,
     neighbors_moore_for_each(coord, 1, neighbors_func);
 }
 
-void Map::neighbors_moore_for_each(Coord2D coord, int dist,
-                                   NeighborsFuncType neighbors_func) const {
-    assert(dist > 0);
-    assert(in_bounds(coord));
+void Map::neighbors_moore_for_each(Coord2D coord, int dist, NeighborsFuncType neighbors_func) const {
+    if constexpr (DEBUG) {
+        if (dist <= 0) {
+            mg_log::error("invalid dist in Map::neighbors_moore_for_each[]");
+            throw mg_error("");
+        }
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::neighbors_moore_for_each[]");
+            throw mg_error("");
+        }
+    }
 
     for (int i = -dist; i <= dist; i++) {
         for (int j = -dist; j <= dist; j++) {
@@ -277,10 +311,17 @@ void Map::neighbors_von_neumann_for_each(
     neighbors_von_neumann_for_each(coord, 1, neighbors_func);
 }
 
-void Map::neighbors_von_neumann_for_each(
-    Coord2D coord, int dist, NeighborsFuncType neighbors_func) const {
-    assert(dist > 0);
-    assert(in_bounds(coord));
+void Map::neighbors_von_neumann_for_each(Coord2D coord, int dist, NeighborsFuncType neighbors_func) const {
+    if constexpr (DEBUG) {
+        if (dist <= 0) {
+            mg_log::error("invalid dist in Map::neighbors_von_neumann_for_each[]");
+            throw mg_error("");
+        }
+        if (!in_bounds(coord)) {
+            mg_log::error("invalid coord in Map::neighbors_von_neumann_for_each[]");
+            throw mg_error("");
+        }
+    }
 
     int up_down = 0;
     for (int i = -dist; i <= dist; ++i) {

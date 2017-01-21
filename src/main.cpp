@@ -1,4 +1,5 @@
 #include <fstream>
+#include <sstream>
 
 #include "mg_util/Stopwatch.hpp"
 #include "mg_util/text_processing.hpp"
@@ -13,7 +14,7 @@
 
 #include "game/Map2.hpp"
 
-#include "fmt/fmt_println.hpp"
+#include "mg_log/Log.hpp"
 
 #include "sdl2/SDLInit.hpp"
 #include "sdl2/SDLRendererWrapper.hpp"
@@ -113,12 +114,15 @@ void sdl_main2() {
                 case SDL_QUIT:
                     running = false;
                     break;
-                case SDL_MOUSEMOTION:
+                case SDL_MOUSEMOTION: {
                     int mouse_x, mouse_y;
                     SDL_GetMouseState(&mouse_x, &mouse_y);
-                    mouse_pos_str = fmt::format("{}, {}", mouse_x, mouse_y);
+                    std::stringstream ss;
+                    ss << mouse_x << ", " << mouse_y;
+                    mouse_pos_str = ss.str();
                     mouse_pos_change = true;
                     break;
+                }
                 case SDL_MOUSEBUTTONDOWN:
                     mouse_str = "Down";
                     mouse_change = true;
@@ -284,15 +288,15 @@ void ca_main() {
         int alive = alive_dead.first;
         int dead = alive_dead.second;
 
-        fmt::println(line);
-        fmt::println("alive: {}, dead: {}", alive, dead);
-        fmt::println(line);
+        mg_log::info(line);
+        mg_log::info("alive: ", alive, ", dead: ", dead);
+        mg_log::info(line);
         for (auto generations : generation_vec) {
-            fmt::println("generations: {}", generations);
-            fmt::println(line);
+            mg_log::info("generations: ", generations);
+            mg_log::info(line);
             for (auto wrap : wrap_vec) {
-                fmt::println("wrap: {}", wrap);
-                fmt::println(line);
+                mg_log::info("wrap: ", wrap);
+                mg_log::info(line);
                 for (int i = 0; i < repeat_count; ++i) {
                     using namespace mapgen;
                     Randomizer randomizer(rand, ground_chance);
@@ -302,16 +306,18 @@ void ca_main() {
                     SectionRemover<SectionRemoverSmall> wall_remover(rand, MapTileType::Wall, MapTileType::Ground, SectionRemoverSmall(200));
 
                     auto map = create_map(width, height, false, randomizer, room_maker, ca, section_remover, wall_remover);
-                    fmt::println_obj(map);
+                    mg_log::info(map);
 
                     int num_walls = map.num_tiles_of_type(MapTileType::Wall);
                     int num_ground = map.num_tiles_of_type(MapTileType::Ground);
-                    fmt::println("num wall:   {}", num_walls);
-                    fmt::println("num ground: {}", num_ground);
+                    mg_log::info("num wall:   ", num_walls);
+                    mg_log::info("num ground: ", num_ground);
                     time.tick_and_print_millis();
-                    fmt::println(line);
+                    mg_log::info(line);
 
-                    mappng::map_to_png(fmt::format("map-{}-{}-{}-{}.png", alive, dead, generations, wrap, i), map, 16);
+                    std::stringstream fileName;
+                    fileName << "map-" << alive << "-" << dead << "-" << generations << "-" << wrap << "-" << i << ".png";
+                    mappng::map_to_png(fileName.str(), map, 16);
                 }
             }
         }
@@ -322,7 +328,7 @@ void ca_main() {
 
 void png_main() {
     auto map = some_map();
-    fmt::println_obj(map);
+    mg_log::info(map);
 
     int tile_size = 4;
 
@@ -510,6 +516,8 @@ void sdl_main() {
 #endif
 
 int main(int argc, char ** argv) {
+    std::ios_base::sync_with_stdio(false);
+    mg_log::LogInit logInit;
     sdl2::SDL2Init sdl2init;
     sdl2::SDL2TTFInit sdl2ttfinit;
     sdl2::SDL2ImageInit sdl2imageinit;
@@ -536,13 +544,13 @@ int main(int argc, char ** argv) {
         //sdl_main();
         ca_main();
     } catch (sdl2::sdl2_error & e) {
-        fmt::println(stderr, "sdl2_error: {}", e.what());
+        mg_log::error("sdl2_error: ", e.what());
         return 1;
     } catch (mg_util::mg_error & e) {
-        fmt::println(stderr, "mg_error: {}", e.what());
+        mg_log::error("mg_error: ", e.what());
         return 2;
     } catch (std::exception & e) {
-        fmt::println(stderr, "exception: {}", e.what());
+        mg_log::error("exception: ", e.what());
         return -1;
     }
 

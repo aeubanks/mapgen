@@ -1,16 +1,17 @@
-//
-// Created by Arthur Eubanks on 10/1/16.
-//
-
 #include "sdl2_global.hpp"
 
-#include "fmt/format.hpp"
+#include <sstream>
+
+static std::string create_sdl2_error_str(std::string err, const char * (*get_error)()) {
+    if (!get_error) {
+        return err;
+    }
+    std::stringstream ss;
+    ss << err << '(' << get_error() << ')';
+    return ss.str();
+}
 
 namespace sdl2 {
-//	sdl2_error::sdl2_error(std::string err) :
-//std::runtime_error(fmt::format("{} error: {}", err, SDL_GetError())) { }
 sdl2_error::sdl2_error(std::string err, const char * (*get_error)())
-    : std::runtime_error(get_error == NULL
-                             ? err
-                             : fmt::format("{} error: {}", err, get_error())) {}
+    : std::runtime_error(create_sdl2_error_str(std::move(err), get_error)) {}
 }

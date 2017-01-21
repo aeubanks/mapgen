@@ -5,12 +5,13 @@
 #ifndef MAPGEN_ARRAY2D_H
 #define MAPGEN_ARRAY2D_H
 
-#include "Coord2D.hpp"
-#include "mg_util_global.hpp"
-
 #include <algorithm>
 #include <functional>
 #include <ostream>
+
+#include "Coord2D.hpp"
+#include "mg_util_global.hpp"
+#include "mg_log/Log.hpp"
 
 namespace mg_util {
 template <typename T>
@@ -150,16 +151,16 @@ class Array2D {
         Array2DCoordValueIterableTemplate_<const Array2D<T>, const T>;
 
   private:
-    int width_, height_;
+    int32_t width_, height_;
     vector<T> values_;
 
   public:
-    Array2D(int width, int height, T init_val = T())
+    Array2D(int32_t width, int32_t height, T init_val = T())
         : width_(width), height_(height),
           values_(static_cast<unsigned long>(width * height), init_val) {}
 
-    int width() const { return width_; }
-    int height() const { return height_; }
+    auto width() const { return width_; }
+    auto height() const { return height_; }
 
     // return if the coord is a valid coord to index the Array2D
     bool in_bounds(Coord2D coord) const {
@@ -168,15 +169,23 @@ class Array2D {
 
     // return a reference to the requested value at coord
     typename decltype(values_)::reference operator[](Coord2D coord) {
-        if (!in_bounds(coord)) {
-            throw mg_error(fmt::format("out of bounds: accessing {} (bounds {}, {})",
-                                       coord, width_, height_));
+        if constexpr (DEBUG) {
+            if (!in_bounds(coord)) {
+                mg_log::error("out of bounds: accessing ", coord, " (bounds ", width_, ", ", height_, ")");
+                throw mg_error("");
+            }
         }
         return values_[coord.x + coord.y * width_];
     }
 
     typename decltype(values_)::const_reference operator[](Coord2D coord) const {
-        return const_cast<Array2D<T> *>(this)->operator[](coord);
+        if constexpr (DEBUG) {
+            if (!in_bounds(coord)) {
+                mg_log::error("out of bounds: accessing ", coord, " (bounds ", width_, ", ", height_, ")");
+                throw mg_error("");
+            }
+        }
+        return values_[coord.x + coord.y * width_];
     }
 
     // calls f(value) on each value
@@ -207,8 +216,8 @@ class Array2D {
 
 template <typename T>
 std::ostream & operator<<(std::ostream & os, const Array2D<T> & arr) {
-    for (int y = 0; y < arr.height(); y++) {
-        for (int x = 0; x < arr.width(); x++) {
+    for (int32_t y = 0; y < arr.height(); y++) {
+        for (int32_t x = 0; x < arr.width(); x++) {
             os << arr[{x, y}];
             if (x != arr.width() - 1) {
                 os << ' ';

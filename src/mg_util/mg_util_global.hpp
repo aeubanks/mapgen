@@ -9,9 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "fmt/fmt_println.hpp"
-#include "fmt/format.hpp"
-
 namespace mg_util {
 using std::string;
 using std::vector;

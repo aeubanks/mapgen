@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.4)
 
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+
 set(MACOSX_BUNDLE TRUE)
 
 set(PROJECT_NAME mapgen)
@@ -35,12 +38,16 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG -DDEBUG=0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g -O0 -DDEBUG=1")
+
 set(BOX2D_BUILD_STATIC 1)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/Box2D/)
 
 set(PROJECT_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-file(GLOB SRC_FILES src/mapgen/*.cpp src/fmt/*.cpp src/json/*.cpp src/mg_util/*.cpp src/mappng/*.cpp src/mapbytes/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
+file(GLOB SRC_FILES src/mapgen/*.cpp src/mg_log/*.cpp src/json/*.cpp src/mg_util/*.cpp src/mappng/*.cpp src/mapbytes/*.cpp src/sdl2/*.cpp src/game/*.cpp src/main.cpp)
 
 set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SRC_FILES})
@@ -74,8 +81,4 @@ endif ()
 if(APPLE)
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif ()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic") #-fsanitize=memory -fsanitize=address -fsanitize=undefined
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g -O0")
 

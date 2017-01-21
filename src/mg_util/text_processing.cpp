@@ -6,6 +6,8 @@
 
 #include <sstream>
 
+#include "mg_log/Log.hpp"
+
 namespace mg_util {
 bool str2int(const string & str, int * val) {
     if (str.empty()) {
@@ -17,7 +19,7 @@ bool str2int(const string & str, int * val) {
     errno = 0;
     auto ret = strtol(c_str, &end, 0);
     if (errno == ERANGE) {
-        fmt::print("number out of range: {}\n", str);
+        mg_log::error("number out of range: ", str);
         return false;
     }
 
@@ -38,7 +40,7 @@ bool str2double(const string & str, double * val) {
     errno = 0;
     auto ret = strtod(c_str, &end);
     if (errno == ERANGE) {
-        fmt::print("number out of range: {}\n", str);
+        mg_log::error("number out of range: ", str);
         return false;
     }
 

@@ -3,6 +3,8 @@
 //
 
 #include "DiamondSquare.hpp"
+
+#include "mg_log/Log.hpp"
 #include "mg_util/mg_math.hpp"
 
 namespace mapgen {
@@ -10,7 +12,12 @@ DiamondSquare::DiamondSquare(mg_util::Random & r, double smoothness)
     : MapGenerator(r), smoothness_(smoothness) {}
 
 void DiamondSquare::modify_map(Map & map) {
-    assert(smoothness_ > 0.0);
+    if constexpr (DEBUG) {
+        if (smoothness_ <= 0.0) {
+            mg_log::error("invalid smoothness");
+            throw mg_util::mg_error("");
+        }
+    }
 
     double deviation = 1.0;
     int width = map.width();
@@ -120,7 +127,7 @@ void DiamondSquare::scale_values(Array2D<double> & values) {
     });
     double dif = max - min;
     if (dif == 0.0) { // if min == max then just set everything to 0
-        fmt::print("DiamondSquare::scale_values() has min == max\n");
+        mg_log::info("DiamondSquare::scale_values() has min == max");
         values.for_each([min, dif](double & val) { val = 0.0; });
     } else { // else scale all values to fit between 0.0 - 1.0
         double scale = 1.0 / dif;

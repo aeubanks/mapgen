@@ -1,14 +1,9 @@
-//
-// Created by I7 on 5/16/2016.
-//
-
 #include "MapTileType2.hpp"
 
 #include <fstream>
-#include <cassert>
 
 #include "mg_util/text_processing.hpp"
-
+#include "mg_log/Log.hpp"
 
 namespace game {
 int MapTileType2::cur_id;
@@ -19,22 +14,29 @@ const MapTileType2 & MapTileType2::get_type(int id) { return types.at(id); }
 int MapTileType2::num_types() { return types.size(); }
 
 void MapTileType2::init() {
-
     std::ifstream file("resources/tiles.txt");
     if (!file.is_open()) {
         throw mg_util::mg_error("resources/tiles.txt does not exist");
     }
+
     std::string line;
     while (std::getline(file, line)) {
         auto split = mg_util::split(line, ' ');
-        assert(split.size() == 3);
+
+        if (split.size() != 3) {
+            mg_log::error("invalid number of columns in line: ", line);
+            throw mg_util::mg_error("");
+        }
+
         std::string name = split[0];
         int x, y;
         if (!mg_util::str2int(split[1], &x)) {
-            throw mg_util::mg_error(fmt::format("invalid x number: {}", split[1]));
+            mg_log::error("invalid x number: ", split[1]);
+            throw mg_util::mg_error("");
         }
         if (!mg_util::str2int(split[2], &y)) {
-            throw mg_util::mg_error(fmt::format("invalid y number: {}", split[2]));
+            mg_log::error("invalid x number: ", split[2]);
+            throw mg_util::mg_error("");
         }
         types.emplace_back(cur_id++, name, x, y);
     }

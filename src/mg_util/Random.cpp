@@ -1,16 +1,14 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
 
 #include "Random.hpp"
 
-#include <cassert>
 #include <chrono>
 
+#include "mg_util_global.hpp"
+
+#include "mg_log/Log.hpp"
+
 namespace mg_util {
-Random::Random()
-    : generator_(static_cast<unsigned int>(
-          std::chrono::system_clock::now().time_since_epoch().count())) {}
+Random::Random() : generator_(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())) {}
 
 Random::Random(int seed) : generator_(static_cast<unsigned int>(seed)) {}
 
@@ -27,7 +25,12 @@ int Random::rand_int_exc(int lo, int hi) { return rand_int_inc(lo, hi - 1); }
 int Random::rand_int_inc(int range) { return rand_int_inc(0, range); }
 
 int Random::rand_int_inc(int lo, int hi) {
-    assert(lo <= hi);
+    if constexpr (DEBUG) {
+        if (lo > hi) {
+            mg_log::error("invalid arguments to Random::rand_int_inc");
+            throw mg_error("");
+        }
+    }
     return std::uniform_int_distribution<int>(lo, hi)(generator_);
 }
 

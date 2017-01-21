@@ -4,7 +4,6 @@
 
 #include "MapTileType.hpp"
 
-#include <cassert>
 #include <fstream>
 
 #include "mg_util/text_processing.hpp"
@@ -25,8 +24,8 @@ char MapTileType_to_char(MapTileType tile) {
         case MapTileType::Ground:
             return '.';
         default:
-            throw mg_error(fmt::format("unexpected tile for MapTileType_to_char: {}",
-                                       MapTileType_to_string(tile)));
+            mg_log::error("unexpected tile for MapTileType_to_char: ", MapTileType_to_string(tile));
+            return ' ';
     }
 }
 }
