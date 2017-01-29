@@ -1,7 +1,3 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
-
 #ifndef MAP_GEN_COORD2D_H
 #define MAP_GEN_COORD2D_H
 
@@ -13,7 +9,8 @@ namespace mg_util {
 // has an x and y
 class Coord2D {
   public:
-    int x, y;
+    using DimType = int32_t;
+    DimType x, y;
 
     Coord2D(int x_, int y_) : x(x_), y(y_) {}
 

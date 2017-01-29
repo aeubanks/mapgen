@@ -24,7 +24,7 @@ public:
     void setCurrent(std::vector<ElementType> elements) { curElements = std::move(elements); }
     void step();
 
-    const std::vector<ElementType> & elements() const { return curElements; }
+    const std::vector<ElementType> & getCurrent() const { return curElements; }
 
 private:
     // current elements to operate on

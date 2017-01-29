@@ -3,8 +3,11 @@
 #include <chrono>
 #include <iomanip>
 
+#include "mg_util/Coord2D.hpp"
+#include "mg_util/Direction.hpp"
 #include "mg_util/Stopwatch.hpp"
 #include "mg_util/text_processing.hpp"
+#include "mg_util/GenerativeGrammar.hpp"
 
 #include "mapgen/CellularAutomaton.hpp"
 #include "mapgen/DiamondSquare.hpp"
@@ -27,9 +30,11 @@
 
 #include "mappng/mappng.hpp"
 
+#include "png++/png.hpp"
+
 #include "Box2D/Box2D.h"
 
-mapgen::Map some_map() {
+static mapgen::Map some_map() {
     using namespace mapgen;
     int width = 40;
     int height = 40;
@@ -48,7 +53,7 @@ mapgen::Map some_map() {
     return create_map(width, height, false, randomizer, room_maker, ca, ground_remover, wall_remover);
 }
 
-void sdl_main2() {
+static void sdl_main2() {
     int window_width = 800;
     int window_height = 600;
 
@@ -264,7 +269,7 @@ void sdl_main2() {
     }
 }
 
-void ca_main() {
+static void ca_main() {
     int width = 40;
     int height = 40;
     double ground_chance = 0.45;
@@ -328,7 +333,7 @@ void ca_main() {
     time.print_total_time_millis();
 }
 
-void png_main() {
+static void png_main() {
     auto map = some_map();
     mg_log::info(map);
 
@@ -337,7 +342,7 @@ void png_main() {
     mappng::map_to_png("test.png", map, tile_size);
 }
 
-std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
+static std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
     os << '{';
     os << vec.x;
     os << ',';
@@ -347,26 +352,26 @@ std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
     return os;
 }
 
-constexpr int Box2DToPixelsRatio = 32;
-constexpr float32 PixelsToBox2DRatio = 1.0f / static_cast<float32>(Box2DToPixelsRatio);
+static constexpr int Box2DToPixelsRatio = 32;
+static constexpr float32 PixelsToBox2DRatio = 1.0f / static_cast<float32>(Box2DToPixelsRatio);
 
-mapgen::Coord2D box2d_to_pixels(float32 x, float32 y) {
+static mapgen::Coord2D box2d_to_pixels(float32 x, float32 y) {
     return mapgen::Coord2D(static_cast<int>(x * Box2DToPixelsRatio), static_cast<int>(y * Box2DToPixelsRatio));
 }
 
-mapgen::Coord2D box2d_to_pixels(const b2Vec2 & v) {
+static mapgen::Coord2D box2d_to_pixels(const b2Vec2 & v) {
     return box2d_to_pixels(v.x, v.y);
 }
 
-b2Vec2 pixels_to_box2d(int x, int y) {
+static b2Vec2 pixels_to_box2d(int x, int y) {
     return b2Vec2(static_cast<float32>(x) * PixelsToBox2DRatio, static_cast<float32>(y) * PixelsToBox2DRatio);
 }
 
-b2Vec2 pixels_to_box2d(const mapgen::Coord2D & c) {
+static b2Vec2 pixels_to_box2d(const mapgen::Coord2D & c) {
     return pixels_to_box2d(c.x, c.y);
 }
 
-void sdl_main() {
+static void sdl_main() {
     constexpr int tile_size_pixels = 32;
     constexpr int player_size_pixels = 25;
 
@@ -513,6 +518,70 @@ void sdl_main() {
     }
 }
 
+template<typename P>
+static void draw_line(png::image<P> & image, P pixel, mg_util::Coord2D c0, mg_util::Coord2D c1) {
+    auto dx = std::abs(c0.x - c1.x);
+    auto dy = std::abs(c0.y - c1.y);
+    mg_util::Coord2D::DimType sx = c0.x < c1.x ? 1 : -1;
+    mg_util::Coord2D::DimType sy = c0.y < c1.y ? 1 : -1;
+    mg_util::Coord2D::DimType err = (dx > dy ? dx : -dy) / 2;
+    mg_util::Coord2D::DimType e2;
+    for (;;) {
+        image.set_pixel(c0.x, c0.y, pixel);
+        if (c0 == c1) {
+            break;
+        }
+        e2 = err;
+        if (e2 > -dx) {
+            err -= dy;
+            c0.x += sx;
+        }
+        if (e2 < dy) {
+            err += dx;
+            c0.y += sy;
+        }
+    }
+}
+
+static void gg_main() {
+    mg_util::GenerativeGrammar gg;
+    auto F = gg.createSymbol();
+    auto L = gg.createTerminal();
+    auto R = gg.createTerminal();
+    gg.setCurrent({F});
+    gg.addRule(F, {F, L, F, R, F, R, F, L, F});
+
+    uint32_t width = 3, height = 1;
+    for (int i = 0; i < 7; ++i) {
+        gg.step();
+        width = width * 3 - 2;
+        height *= 3;
+
+        std::stringstream fileNameSS;
+        fileNameSS << "koch" << i << ".png";
+        png::image<png::gray_pixel_1> image(width, height);
+
+        png::gray_pixel_1 black(1);
+        mg_util::Coord2D curCoord(0, 0);
+        auto curDir = mg_util::Direction::Right;
+        image.set_pixel(curCoord.x, curCoord.y, black);
+        for (auto c: gg.getCurrent()) {
+            if (c == F) {
+                curCoord += curDir;
+                image.set_pixel(curCoord.x, curCoord.y, black);
+                curCoord += curDir;
+                image.set_pixel(curCoord.x, curCoord.y, black);
+            } else if (c == L) {
+                curDir = curDir.ccw();
+            } else if (c == R) {
+                curDir = curDir.cw();
+            }
+        }
+        image.write(fileNameSS.str());
+        mg_log::info("wrote to ", fileNameSS.str());
+    }
+}
+
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"
 #endif
@@ -527,7 +596,8 @@ int main(int argc, char ** argv) {
         logFileNameSS << std::put_time(std::localtime(&now_c), "%Y-%m-%d-%H-%M-%S");
         logFileName = logFileNameSS.str();
     }
-    mg_log::LogInit logInit(logFileName);
+    // mg_log::LogInit logInit(logFileName);
+    mg_log::LogInit logInit;
     sdl2::SDL2Init sdl2init;
     sdl2::SDL2TTFInit sdl2ttfinit;
     sdl2::SDL2ImageInit sdl2imageinit;
@@ -552,7 +622,16 @@ int main(int argc, char ** argv) {
         std::vector<std::string> args(argv, argv + argc);
 
         //sdl_main();
-        ca_main();
+        //ca_main();
+        //gg_main();
+        png::image<png::rgb_pixel> image(20, 30);
+        mg_util::Coord2D c0(image.get_width() - 1, image.get_height() - 1);
+        mg_util::Coord2D c1(0, 0);
+        draw_line(image, png::rgb_pixel{0, 100, 0}, c0, c1);
+        c0.y = 0;
+        c1.y = image.get_height() - 1;
+        draw_line(image, png::rgb_pixel{100, 100, 0}, c0, c1);
+        image.write("image.png");
     } catch (sdl2::sdl2_error & e) {
         mg_log::error("sdl2_error: ", e.what());
         return 1;
