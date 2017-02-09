@@ -14,30 +14,34 @@
 namespace mapgen {
 class Map {
   public:
+    using SizeType = int32_t;
+    using DistType = int32_t;
+    using CountType = int32_t;
+
     // all of these are assuming that all neighbors are valid
 
     // the number of moore neighbors at most dist distance away
-    static int num_neighbors_moore(int dist);
+    static CountType num_neighbors_moore(DistType dist);
     // the total weight of moore neighbors at most dist distance away, closer
     // neighbors have larger weight
     // e.g. for dist 3, anything moore neighbors of dist 1 have weight 3, any
     // moore neighbors of dist 3 have weight 1
-    static int num_neighbors_moore_weighted(int dist);
+    static CountType num_neighbors_moore_weighted(DistType dist);
     // the number of von neumann neighbors at most dist distance away
-    static int num_neighbors_von_neumann(int dist);
+    static CountType num_neighbors_von_neumann(DistType dist);
     // the total weight of von neumann neighbors at most dist distance away,
     // closer neighbors have larger weight
     // e.g. for dist 3, anything von neumann neighbors of dist 1 have weight 3,
     // any von neumann neighbors of dist 3 have weight 1
-    static int num_neighbors_von_neumann_weighted(int dist);
+    static CountType num_neighbors_von_neumann_weighted(DistType dist);
 
-    Map(int width, int height);
-    Map(int width, int height, MapTileType type);
-    Map(int width, int height, bool wrap);
-    Map(int width, int height, bool wrap, MapTileType type);
+    Map(SizeType width, SizeType height);
+    Map(SizeType width, SizeType height, MapTileType type);
+    Map(SizeType width, SizeType height, bool wrap);
+    Map(SizeType width, SizeType height, bool wrap, MapTileType type);
 
-    int width() const { return map_.width(); }
-    int height() const { return map_.height(); }
+    SizeType width() const { return map_.width(); }
+    SizeType height() const { return map_.height(); }
     bool wrapped() const { return wrap_; }
 
   private:
@@ -46,23 +50,23 @@ class Map {
 
   public:
     // iterators
-    decltype(map_.begin()) begin() { return map_.begin(); }
-    decltype(map_.end()) end() { return map_.end(); }
-    decltype(map_.cbegin()) begin() const { return map_.cbegin(); }
-    decltype(map_.cend()) end() const { return map_.cend(); }
-    decltype(map_.cbegin()) cbegin() const { return map_.cbegin(); }
-    decltype(map_.cend()) cend() const { return map_.cend(); }
+    auto begin() { return map_.begin(); }
+    auto end() { return map_.end(); }
+    auto begin() const { return map_.cbegin(); }
+    auto end() const { return map_.cend(); }
+    auto cbegin() const { return map_.cbegin(); }
+    auto cend() const { return map_.cend(); }
 
     // returns an iterable that goes through all possible map coords
-    decltype(map_.coords()) coords() const { return map_.coords(); }
+    auto coords() const { return map_.coords(); }
 
-    // returns an iterable that goes through all possible map coords
-    decltype(map_.coords_values()) coords_values() {
-        return map_.coords_values();
-    }
-    auto coords_values() const -> decltype(map_.coords_values()) {
-        return map_.coords_values();
-    }
+    // returns an iterable that goes through all possible map coords and values
+    auto coords_values() { return map_.coords_values(); }
+    auto coords_values() const { return map_.coords_values(); }
+
+    // returns an iterable that goes through all possible map values
+    auto values() { return map_.values(); }
+    auto values() const { return map_.values(); }
 
     // returns if the coord is a valid coord to index the map
     bool in_bounds(Coord2D coord) const;
@@ -71,40 +75,36 @@ class Map {
     MapTile & operator[](Coord2D coord);
     const MapTile & operator[](Coord2D coord) const;
 
+    Map flippedX() const;
+    Map flippedY() const;
+    Map rotated() const;
+
     // returns the total number of tiles that are the given type
-    int num_tiles_of_type(MapTileType tile) const;
+    CountType num_tiles_of_type(MapTileType tile) const;
 
     // returns the neighbors of a coord, filtering out out of bound ones
     vector<Coord2D> neighbors_moore(Coord2D coord) const;
-    vector<Coord2D> neighbors_moore(Coord2D coord, int dist) const;
+    vector<Coord2D> neighbors_moore(Coord2D coord, DistType dist) const;
     vector<Coord2D> neighbors_von_neumann(Coord2D coord) const;
-    vector<Coord2D> neighbors_von_neumann(Coord2D coord, int dist) const;
+    vector<Coord2D> neighbors_von_neumann(Coord2D coord, DistType dist) const;
 
     using NeighborsFuncType = std::function<void(Coord2D)>;
-    using NeighborsWeightedFuncType = std::function<void(Coord2D, int)>;
+    using NeighborsWeightedFuncType = std::function<void(Coord2D, DistType)>;
 
     // do something on each neighbor, not including out of bound ones
     // more efficient than getting the vector of neighbors (probably)
-    void neighbors_moore_for_each(Coord2D coord,
-                                  NeighborsFuncType neighbors_func) const;
-    void neighbors_moore_for_each(Coord2D coord, int dist,
-                                  NeighborsFuncType neighbors_func) const;
-    void neighbors_moore_weighted_for_each(
-        Coord2D coord, int dist, NeighborsWeightedFuncType neighbors_func) const;
-    void neighbors_von_neumann_for_each(Coord2D coord,
-                                        NeighborsFuncType neighbors_func) const;
-    void neighbors_von_neumann_for_each(Coord2D coord, int dist,
-                                        NeighborsFuncType neighbors_func) const;
-    void neighbors_von_neumann_weighted_for_each(
-        Coord2D coord, int dist, NeighborsWeightedFuncType neighbors_func) const;
+    void neighbors_moore_for_each(Coord2D coord, NeighborsFuncType neighbors_func) const;
+    void neighbors_moore_for_each(Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const;
+    void neighbors_moore_weighted_for_each(Coord2D coord, DistType dist, NeighborsWeightedFuncType neighbors_func) const;
+    void neighbors_von_neumann_for_each(Coord2D coord, NeighborsFuncType neighbors_func) const;
+    void neighbors_von_neumann_for_each(Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const;
+    void neighbors_von_neumann_weighted_for_each(Coord2D coord, DistType dist, NeighborsWeightedFuncType neighbors_func) const;
 
     // returns the number of neighbors that have the specified MapTileType
-    int num_neighbors_of_type_moore(MapTileType type, Coord2D coord) const;
-    int num_neighbors_of_type_moore(MapTileType type, Coord2D coord,
-                                    int dist) const;
-    int num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord) const;
-    int num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord,
-                                          int dist) const;
+    CountType num_neighbors_of_type_moore(MapTileType type, Coord2D coord) const;
+    CountType num_neighbors_of_type_moore(MapTileType type, Coord2D coord, DistType dist) const;
+    CountType num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord) const;
+    CountType num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, DistType dist) const;
 
     // returns all coords in the section that coord is part of
     // a section is a bunch of connected tiles that have the same type
@@ -143,9 +143,9 @@ class Map {
                                   SectionFuncType section_func);
 
     using NeighborsForEachFuncType = void (Map::*)(
-        Coord2D coord, int dist, NeighborsFuncType neighbors_func) const;
+        Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const;
     vector<Coord2D>
-    neighbors_helper(Coord2D coord, int dist,
+    neighbors_helper(Coord2D coord, DistType dist,
                      NeighborsForEachFuncType find_neighbors_func) const;
 };
 

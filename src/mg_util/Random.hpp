@@ -10,25 +10,27 @@
 namespace mg_util {
 class Random {
   public:
+    using IntType = int64_t;
+
     Random();
-    Random(int seed);
+    Random(IntType seed);
 
     // returns true/false with equal probability
     bool rand_bool();
     // returns true with probability chance, false with probability (1.0 - chance)
     bool rand_bool(double chance);
     // returns a random int with equality probability in the range (0 - range)
-    int rand_int_inc(int range);
+    IntType rand_int_inc(IntType range);
     // returns a random int with equality probability in the range (lo - hi)
-    int rand_int_inc(int lo, int hi);
+    IntType rand_int_inc(IntType lo, IntType hi);
     // returns a random int with equality probability in the range (0 - (range -
     // 1))
-    int rand_int_exc(int range);
+    IntType rand_int_exc(IntType range);
     // returns a random int with equality probability in the range (lo - (hi - 1))
-    int rand_int_exc(int lo, int hi);
+    IntType rand_int_exc(IntType lo, IntType hi);
     // returns a binomial distribution with # tries, probability of success of
     // prob
-    int rand_binomial(int tries, double prob);
+    IntType rand_binomial(IntType tries, double prob);
     // returns a random double in the range (0.0 - 1.0)
     double rand_double();
     // returns a random double in the range (0.0 - range)
@@ -41,7 +43,7 @@ class Random {
     double rand_normal(double mean, double stddev);
 
   private:
-    std::mt19937 generator_;
+    std::mt19937_64 generator_;
 };
 }
 

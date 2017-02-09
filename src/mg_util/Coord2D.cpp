@@ -28,4 +28,5 @@ bool operator!=(Coord2D a, Coord2D b) { return !operator==(a, b); }
 std::ostream & operator<<(std::ostream & os, const Coord2D & coord) {
     return os << "(" << coord.x << ", " << coord.y << ")";
 }
+
 }

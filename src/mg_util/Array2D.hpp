@@ -121,12 +121,6 @@ class Array2D {
         Coord2D cur_coord_;
     };
 
-    using Array2DCoordValueIterator_ =
-        Array2DCoordValueIteratorTemplate_<Array2D<T>, Array2DCoordValuePair_>;
-    using Array2DCoordValueIteratorConst_ =
-        Array2DCoordValueIteratorTemplate_<const Array2D<T>,
-                                           Array2DCoordValuePairConst_>;
-
     // an iterable for Array2D that goes through all coords
     // returned from Array2d::coords_values
     template <typename ArrayType, typename ReturnType>
@@ -134,8 +128,7 @@ class Array2D {
       public:
         Array2DCoordValueIterableTemplate_(ArrayType & arr) : array_(arr) {}
 
-        using IteratorType = Array2DCoordValueIteratorTemplate_<
-            ArrayType, Array2DCoordValuePairTemplate_<ReturnType>>;
+        using IteratorType = Array2DCoordValueIteratorTemplate_<ArrayType, Array2DCoordValuePairTemplate_<ReturnType>>;
 
         IteratorType begin() { return IteratorType(array_, {0, 0}); }
 
@@ -145,17 +138,87 @@ class Array2D {
         ArrayType & array_;
     };
 
-    using Array2DCoordValueIterable_ =
-        Array2DCoordValueIterableTemplate_<Array2D<T>, T>;
-    using Array2DCoordValueIterableConst_ =
-        Array2DCoordValueIterableTemplate_<const Array2D<T>, const T>;
+    using Array2DCoordValueIterable_ = Array2DCoordValueIterableTemplate_<Array2D<T>, T>;
+    using Array2DCoordValueIterableConst_ = Array2DCoordValueIterableTemplate_<const Array2D<T>, const T>;
+
+    // a struct that holds a coord (private) and the corresponding value of an Array2D
+    // ValueType is meant to be either 'T' or 'const T' depending on the
+    // application
+    // returned from Array2DValueIteratorTemplate_
+    template <typename ValueType>
+    class Array2DValuePairTemplate_ {
+      public:
+        Coord2D coord;
+        ValueType & value;
+
+        Array2DValuePairTemplate_(Coord2D c, ValueType & val) : coord(c), value(val) {}
+    };
+
+    using Array2DValuePair_ = Array2DValuePairTemplate_<T>;
+    using Array2DValuePairConst_ = Array2DValuePairTemplate_<const T>;
+
+    // an iterator for an Array2D that provides all of the coords and values
+    // through Array2DValuePairTemplate_
+    template <typename ArrayType, typename ReturnType>
+    class Array2DValueIteratorTemplate_ {
+      public:
+        using ThisType = Array2DValueIteratorTemplate_<ArrayType, ReturnType>;
+
+        Array2DValueIteratorTemplate_(ArrayType & arr, Coord2D coord) : array_(arr), cur_coord_(coord) {}
+
+        bool operator==(ThisType other) const {
+            return cur_coord_ == other.cur_coord_;
+        }
+
+        bool operator!=(ThisType other) const { return !operator==(other); }
+
+        auto operator++() -> ThisType & {
+            ++cur_coord_.x;
+            if (cur_coord_.x == array_.width()) {
+                cur_coord_.x = 0;
+                ++cur_coord_.y;
+            }
+            return *this;
+        }
+
+        ReturnType operator*() const {
+            return array_[cur_coord_];
+        }
+
+      private:
+        ArrayType & array_;
+        Coord2D cur_coord_;
+    };
+
+    using Array2DValueIterator_ = Array2DValueIteratorTemplate_<Array2D<T>, T &>;
+    // returned from Array2d::values
+    template <typename ArrayType, typename ReturnType>
+    class Array2DValueIterableTemplate_ {
+      public:
+        Array2DValueIterableTemplate_(ArrayType & arr) : array_(arr) {}
+
+        using IteratorType = Array2DValueIteratorTemplate_<ArrayType, ReturnType>;
+
+        IteratorType begin() { return IteratorType(array_, {0, 0}); }
+
+        IteratorType end() { return IteratorType(array_, {0, array_.height()}); }
+
+      private:
+        ArrayType & array_;
+    };
+
+    using Array2DValueIterable_ = Array2DValueIterableTemplate_<Array2D<T>, T &>;
+    using Array2DValueIterableConst_ = Array2DValueIterableTemplate_<const Array2D<T>, const T &>;
+
+  public:
+    using SizeType = int32_t;
 
   private:
-    int32_t width_, height_;
+    SizeType width_, height_;
     vector<T> values_;
 
   public:
-    Array2D(int32_t width, int32_t height, T init_val = T())
+    Array2D(SizeType width, SizeType height, T init_val = T())
         : width_(width), height_(height),
           values_(static_cast<unsigned long>(width * height), init_val) {}
 
@@ -168,7 +231,7 @@ class Array2D {
     }
 
     // return a reference to the requested value at coord
-    typename decltype(values_)::reference operator[](Coord2D coord) {
+    decltype(auto) operator[](Coord2D coord) {
         if constexpr (DEBUG) {
             if (!in_bounds(coord)) {
                 mg_log::error("out of bounds: accessing ", coord, " (bounds ", width_, ", ", height_, ")");
@@ -178,7 +241,7 @@ class Array2D {
         return values_[coord.x + coord.y * width_];
     }
 
-    typename decltype(values_)::const_reference operator[](Coord2D coord) const {
+    decltype(auto) operator[](Coord2D coord) const {
         if constexpr (DEBUG) {
             if (!in_bounds(coord)) {
                 mg_log::error("out of bounds: accessing ", coord, " (bounds ", width_, ", ", height_, ")");
@@ -195,12 +258,12 @@ class Array2D {
     }
 
     // iterators
-    decltype(values_.begin()) begin() { return values_.begin(); }
-    decltype(values_.end()) end() { return values_.end(); }
-    decltype(values_.cbegin()) begin() const { return values_.cbegin(); }
-    decltype(values_.cend()) end() const { return values_.cend(); }
-    decltype(values_.cbegin()) cbegin() const { return values_.cbegin(); }
-    decltype(values_.cend()) cend() const { return values_.cend(); }
+    auto begin() { return values_.begin(); }
+    auto end() { return values_.end(); }
+    auto begin() const { return values_.cbegin(); }
+    auto end() const { return values_.cend(); }
+    auto cbegin() const { return values_.cbegin(); }
+    auto cend() const { return values_.cend(); }
 
     // return an iterable of all valid coords
     Array2DCoordIterable_ coords() const { return Array2DCoordIterable_(*this); }
@@ -212,12 +275,20 @@ class Array2D {
     Array2DCoordValueIterableConst_ coords_values() const {
         return Array2DCoordValueIterableConst_(*this);
     }
+
+    // return an iterable of all values
+    Array2DValueIterable_ values() {
+        return Array2DValueIterable_(*this);
+    }
+    Array2DValueIterableConst_ values() const {
+        return Array2DValueIterableConst_(*this);
+    }
 };
 
 template <typename T>
 std::ostream & operator<<(std::ostream & os, const Array2D<T> & arr) {
-    for (int32_t y = 0; y < arr.height(); y++) {
-        for (int32_t x = 0; x < arr.width(); x++) {
+    for (typename decltype(arr)::SizeType y = 0; y < arr.height(); y++) {
+        for (typename decltype(arr)::SizeType x = 0; x < arr.width(); x++) {
             os << arr[{x, y}];
             if (x != arr.width() - 1) {
                 os << ' ';

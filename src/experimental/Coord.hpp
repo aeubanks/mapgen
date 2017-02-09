@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <ostream>
 
+#include <boost/functional/hash.hpp>
+
 namespace mg_util {
 
 template<std::size_t Dims>
@@ -143,7 +145,7 @@ struct hash<mg_util::Coord<Dims>> {
     std::size_t operator()(const mg_util::Coord<Dims> & coord) const {
         std::size_t seed = 0;
         for (std::int16_t i = 0; i < Dims; ++i) {
-            seed ^= static_cast<decltype(seed)>(coord[i]) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            boost::hash_combine(seed, coord[i]);
         }
         return seed;
     }

@@ -9,38 +9,39 @@
 #include <utility>
 
 namespace mapgen {
-int Map::num_neighbors_moore(int dist) {
-    int side = 2 * dist + 1;
+
+Map::CountType Map::num_neighbors_moore(DistType dist) {
+    CountType side = 2 * dist + 1;
     return side * side - 1;
 }
 
-int Map::num_neighbors_moore_weighted(int dist) {
-    int count = 0;
-    for (int i = 1; i <= dist; ++i) {
+Map::CountType Map::num_neighbors_moore_weighted(DistType dist) {
+    CountType count = 0;
+    for (DistType i = 1; i <= dist; ++i) {
         count += 8 * i * (dist + 1 - i);
     }
     return count;
 }
 
-int Map::num_neighbors_von_neumann(int dist) { return 2 * dist * (dist + 1); }
+Map::CountType Map::num_neighbors_von_neumann(DistType dist) { return 2 * dist * (dist + 1); }
 
-int Map::num_neighbors_von_neumann_weighted(int dist) {
-    int count = 0;
-    for (int i = 1; i <= dist; ++i) {
+Map::CountType Map::num_neighbors_von_neumann_weighted(DistType dist) {
+    CountType count = 0;
+    for (DistType i = 1; i <= dist; ++i) {
         count += 4 * i * (dist + 1 - i);
     }
     return count;
 }
 
-Map::Map(int width, int height) : Map(width, height, false) {}
+Map::Map(SizeType width, SizeType height) : Map(width, height, false) {}
 
-Map::Map(int width, int height, MapTileType type)
+Map::Map(SizeType width, SizeType height, MapTileType type)
     : Map(width, height, false, type) {}
 
-Map::Map(int width, int height, bool wrap)
-    : Map(width, height, wrap, MapTileType::Wall) {}
+Map::Map(SizeType width, SizeType height, bool wrap)
+    : Map(width, height, wrap, MapTileType::None) {}
 
-Map::Map(int width, int height, bool wrap, MapTileType type)
+Map::Map(SizeType width, SizeType height, bool wrap, MapTileType type)
     : map_(width, height, type), wrap_(wrap) {
     if constexpr (DEBUG) {
         if (width <= 0 || height <= 0) {
@@ -57,8 +58,8 @@ bool Map::in_bounds(Coord2D coord) const {
 Coord2D Map::wrapped_coord(Coord2D coord) const {
     if constexpr (DEBUG) {
         if (!in_bounds(coord) || !wrap_) {
-            mg_log::error("invalid state in Map::wrapped_coord");
-            throw mg_error("");
+            // mg_log::error("invalid state in Map::wrapped_coord");
+            throw mg_error("invalid state in Map::wrapped_coord");
         }
     }
 
@@ -91,8 +92,46 @@ const MapTile & Map::operator[](Coord2D coord) const {
     return const_cast<Map *>(this)->operator[](coord);
 }
 
-int Map::num_tiles_of_type(MapTileType type) const {
-    int count = 0;
+Map Map::flippedX() const {
+    auto width = this->width();
+    auto height = this->height();
+    Map ret(width, height, wrap_);
+    for (SizeType y = 0; y < height; ++y) {
+        for (SizeType x = 0; x < (width + 1) / 2; ++x) {
+            ret[{x, y}] = (*this)[{width - 1 - x, y}];
+            ret[{width - 1 - x, y}] = (*this)[{x, y}];
+        }
+    }
+    return ret;
+}
+
+Map Map::flippedY() const {
+    auto width = this->width();
+    auto height = this->height();
+    Map ret(width, height, wrap_);
+    for (SizeType y = 0; y < (height + 1) / 2; ++y) {
+        for (SizeType x = 0; x < width; ++x) {
+            ret[{x, y}] = (*this)[{x, height - 1 - y}];
+            ret[{x, height - 1 - y}] = (*this)[{x, y}];
+        }
+    }
+    return ret;
+}
+
+Map Map::rotated() const {
+    auto width = this->width();
+    auto height = this->height();
+    Map ret(height, width, wrap_);
+    for (SizeType y = 0; y < height; ++y) {
+        for (SizeType x = 0; x < width; ++x) {
+            ret[{height - 1 - y, x}] = (*this)[{x, y}];
+        }
+    }
+    return ret;
+}
+
+Map::CountType Map::num_tiles_of_type(MapTileType type) const {
+    CountType count = 0;
     for (auto & t : map_) {
         if (t.type == type) {
             count++;
@@ -101,7 +140,7 @@ int Map::num_tiles_of_type(MapTileType type) const {
     return count;
 }
 
-int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord, int dist) const {
+Map::CountType Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord, DistType dist) const {
     if constexpr (DEBUG) {
         if (!in_bounds(coord)) {
             mg_log::error("invalid coord in Map::num_neighbors_of_type_moore[]");
@@ -109,7 +148,7 @@ int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord, int dist) 
         }
     }
 
-    int count = 0;
+    CountType count = 0;
     neighbors_moore_for_each(coord, dist, [&count, type, this](Coord2D neighbor) {
         if (operator[](neighbor).type == type) {
             ++count;
@@ -118,11 +157,11 @@ int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord, int dist) 
     return count;
 }
 
-int Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord) const {
+Map::CountType Map::num_neighbors_of_type_moore(MapTileType type, Coord2D coord) const {
     return num_neighbors_of_type_moore(type, coord, 1);
 }
 
-int Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, int dist) const {
+Map::CountType Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, DistType dist) const {
     if constexpr (DEBUG) {
         if (!in_bounds(coord)) {
             mg_log::error("invalid coord in Map::num_neighbors_of_type_von_neumann[]");
@@ -130,7 +169,7 @@ int Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, int 
         }
     }
 
-    int count = 0;
+    CountType count = 0;
     neighbors_von_neumann_for_each(coord, dist,
                                    [&count, type, this](Coord2D neighbor) {
                                        if (operator[](neighbor).type == type) {
@@ -140,7 +179,7 @@ int Map::num_neighbors_of_type_von_neumann(MapTileType type, Coord2D coord, int 
     return count;
 }
 
-int Map::num_neighbors_of_type_von_neumann(MapTileType type,
+Map::CountType Map::num_neighbors_of_type_von_neumann(MapTileType type,
                                            Coord2D coord) const {
     return num_neighbors_of_type_von_neumann(type, coord, 1);
 }
@@ -230,7 +269,7 @@ vector<Coord2D> Map::neighbors_moore(Coord2D coord) const {
     return neighbors_moore(coord, 1);
 }
 
-vector<Coord2D> Map::neighbors_moore(Coord2D coord, int dist) const {
+vector<Coord2D> Map::neighbors_moore(Coord2D coord, DistType dist) const {
     return neighbors_helper(coord, dist, &Map::neighbors_moore_for_each);
     //		vector<Coord2D> ret;
     //		auto add_to_ret = [&ret, this](Coord2D add_coord) {
@@ -244,7 +283,7 @@ vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord) const {
     return neighbors_von_neumann(coord, 1);
 }
 
-vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord, int dist) const {
+vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord, DistType dist) const {
     return neighbors_helper(coord, dist, &Map::neighbors_von_neumann_for_each);
     //		vector<Coord2D> ret;
     //		auto add_to_ret = [&ret, this](Coord2D add_coord) {
@@ -255,7 +294,7 @@ vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord, int dist) const {
 }
 
 vector<Coord2D>
-Map::neighbors_helper(Coord2D coord, int dist,
+Map::neighbors_helper(Coord2D coord, DistType dist,
                       NeighborsForEachFuncType find_neighbors_func) const {
     vector<Coord2D> ret;
     auto add_to_ret = [&ret, this](Coord2D add_coord) {
@@ -270,7 +309,7 @@ void Map::neighbors_moore_for_each(Coord2D coord,
     neighbors_moore_for_each(coord, 1, neighbors_func);
 }
 
-void Map::neighbors_moore_for_each(Coord2D coord, int dist, NeighborsFuncType neighbors_func) const {
+void Map::neighbors_moore_for_each(Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const {
     if constexpr (DEBUG) {
         if (dist <= 0) {
             mg_log::error("invalid dist in Map::neighbors_moore_for_each[]");
@@ -282,8 +321,8 @@ void Map::neighbors_moore_for_each(Coord2D coord, int dist, NeighborsFuncType ne
         }
     }
 
-    for (int i = -dist; i <= dist; i++) {
-        for (int j = -dist; j <= dist; j++) {
+    for (DistType i = -dist; i <= dist; i++) {
+        for (DistType j = -dist; j <= dist; j++) {
             if (i == 0 && j == 0) {
                 continue;
             }
@@ -295,12 +334,10 @@ void Map::neighbors_moore_for_each(Coord2D coord, int dist, NeighborsFuncType ne
     }
 }
 
-void Map::neighbors_moore_weighted_for_each(
-    Coord2D coord, int dist, NeighborsWeightedFuncType neighbors_func) const {
-    auto find_weight_and_neighbors_func = [coord, dist, neighbors_func,
-                                           this](Coord2D idx) {
+void Map::neighbors_moore_weighted_for_each(Coord2D coord, DistType dist, NeighborsWeightedFuncType neighbors_func) const {
+    auto find_weight_and_neighbors_func = [coord, dist, neighbors_func, this](Coord2D idx) {
         auto dif = coord - idx;
-        int weight = dist + 1 - std::max(abs(dif.x), abs(dif.y));
+        DistType weight = dist + 1 - std::max(abs(dif.x), abs(dif.y));
         neighbors_func(idx, weight);
     };
     neighbors_moore_for_each(coord, dist, find_weight_and_neighbors_func);
@@ -311,7 +348,7 @@ void Map::neighbors_von_neumann_for_each(
     neighbors_von_neumann_for_each(coord, 1, neighbors_func);
 }
 
-void Map::neighbors_von_neumann_for_each(Coord2D coord, int dist, NeighborsFuncType neighbors_func) const {
+void Map::neighbors_von_neumann_for_each(Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const {
     if constexpr (DEBUG) {
         if (dist <= 0) {
             mg_log::error("invalid dist in Map::neighbors_von_neumann_for_each[]");
@@ -323,9 +360,9 @@ void Map::neighbors_von_neumann_for_each(Coord2D coord, int dist, NeighborsFuncT
         }
     }
 
-    int up_down = 0;
-    for (int i = -dist; i <= dist; ++i) {
-        for (int j = -up_down; j <= up_down; ++j) {
+    DistType up_down = 0;
+    for (DistType i = -dist; i <= dist; ++i) {
+        for (DistType j = -up_down; j <= up_down; ++j) {
             if (i == 0 && j == 0) {
                 continue;
             }
@@ -343,11 +380,11 @@ void Map::neighbors_von_neumann_for_each(Coord2D coord, int dist, NeighborsFuncT
 }
 
 void Map::neighbors_von_neumann_weighted_for_each(
-    Coord2D coord, int dist, NeighborsWeightedFuncType neighbors_func) const {
+    Coord2D coord, DistType dist, NeighborsWeightedFuncType neighbors_func) const {
     auto find_weight_and_neighbors_func = [coord, dist, neighbors_func,
                                            this](Coord2D idx) {
         auto dif = coord - idx;
-        int weight = 2 * dist + 1 - (abs(dif.x) + abs(dif.y));
+        DistType weight = 2 * dist + 1 - (abs(dif.x) + abs(dif.y));
         neighbors_func(idx, weight);
     };
     neighbors_moore_for_each(coord, dist, find_weight_and_neighbors_func);

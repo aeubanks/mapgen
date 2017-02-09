@@ -16,6 +16,7 @@
 #include "mapgen/Randomizer.hpp"
 #include "mapgen/RoomMaker.hpp"
 #include "mapgen/SectionRemover.hpp"
+#include "mapgen/PrefabCombiner.hpp"
 
 #include "game/Map2.hpp"
 
@@ -333,6 +334,14 @@ static void ca_main() {
     time.print_total_time_millis();
 }
 
+static void prefab_main() {
+    mapgen::Map map(100, 100, mapgen::MapTileType::None);
+    mg_util::Random rand(0);
+    mapgen::PrefabCombiner pc(rand, "rooms.txt");
+    pc.modify_map(map);
+    mappng::map_to_png("prefabcombiner.png", map, 16);
+}
+
 static void png_main() {
     auto map = some_map();
     mg_log::info(map);
@@ -582,10 +591,6 @@ static void gg_main() {
     }
 }
 
-#ifdef __APPLE__
-#include "CoreFoundation/CoreFoundation.h"
-#endif
-
 int main(int argc, char ** argv) {
     std::ios_base::sync_with_stdio(false);
     std::string logFileName;
@@ -602,36 +607,13 @@ int main(int argc, char ** argv) {
     sdl2::SDL2TTFInit sdl2ttfinit;
     sdl2::SDL2ImageInit sdl2imageinit;
 
-#ifdef __APPLE__
-    std::ofstream f("/Users/aeubanks/mapgen.log");
-    CFBundleRef mainBundle = CFBundleGetMainBundle();
-    CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-    char path[PATH_MAX];
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX)) {
-        puts("CFURLGetFileSystemRepresentation fail\n");
-    }
-    CFRelease(resourcesURL);
-
-    chdir(path);
-    f << "cur path: " << path << '\n';
-    puts("cur path:");
-    puts(path);
-#endif
-
     try {
-        std::vector<std::string> args(argv, argv + argc);
+        //std::vector<std::string> args(argv, argv + argc);
 
         //sdl_main();
         //ca_main();
         //gg_main();
-        png::image<png::rgb_pixel> image(20, 30);
-        mg_util::Coord2D c0(image.get_width() - 1, image.get_height() - 1);
-        mg_util::Coord2D c1(0, 0);
-        draw_line(image, png::rgb_pixel{0, 100, 0}, c0, c1);
-        c0.y = 0;
-        c1.y = image.get_height() - 1;
-        draw_line(image, png::rgb_pixel{100, 100, 0}, c0, c1);
-        image.write("image.png");
+        prefab_main();
     } catch (sdl2::sdl2_error & e) {
         mg_log::error("sdl2_error: ", e.what());
         return 1;

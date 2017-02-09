@@ -8,8 +8,7 @@ namespace mapgen {
 void DrunkMiners::modify_map(Map & map) {
     bool is_large_wall;
     do {
-        vector<Coord2D> miners{{rand_.rand_int_exc(0, map.width()),
-                                rand_.rand_int_exc(0, map.height())}};
+        vector<Coord2D> miners{Coord2D(rand_.rand_int_exc(0, map.width()), rand_.rand_int_exc(0, map.height()))};
         while (!miners.empty()) {
             for (int i = static_cast<decltype(i)>(miners.size() - 1); i >= 0; --i) {
                 auto miner = miners[i];
@@ -17,16 +16,14 @@ void DrunkMiners::modify_map(Map & map) {
                 if (rand_.rand_bool(spawn_prob_)) {
                     miners.push_back(miner);
                 }
-                int num_ground_neighbors =
-                    8 - map.num_neighbors_of_type_moore(MapTileType::Wall, miner);
+                int num_ground_neighbors = 8 - map.num_neighbors_of_type_moore(MapTileType::Wall, miner);
 
                 if (num_ground_neighbors >= neighbor_ground_limit_) {
                     // delete current miner
                     miners[i] = miners.back();
                     miners.pop_back();
                 } else {
-                    Coord2D rand_dir(rand_.rand_int_inc(-1, 1),
-                                     rand_.rand_int_inc(-1, 1));
+                    Coord2D rand_dir(rand_.rand_int_inc(-1, 1), rand_.rand_int_inc(-1, 1));
                     auto new_miner = miner + rand_dir;
                     if (map.in_bounds(new_miner)) {
                         miners[i] = new_miner;

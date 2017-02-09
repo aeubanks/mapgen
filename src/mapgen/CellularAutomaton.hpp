@@ -38,8 +38,7 @@ template <typename CARule>
 void CellularAutomaton<CARule>::generation(Map & map) {
     Map next_gen = map;
     for (auto coord : map.coords()) {
-        next_gen[coord] =
-            rule_(map, coord) ? MapTileType::Ground : MapTileType::Wall;
+        next_gen[coord] = rule_(map, coord) ? MapTileType::Ground : MapTileType::Wall;
     }
     map = next_gen;
 }
