@@ -4,7 +4,7 @@
 #include "MapGenerator.hpp"
 
 namespace mapgen {
-class PrefabCombiner : public MapGenerator {
+class PrefabCombiner final : public MapGenerator {
 public:
     PrefabCombiner(mg_util::Random & r, std::string roomsFileName);
 

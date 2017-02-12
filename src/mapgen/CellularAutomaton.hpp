@@ -9,7 +9,7 @@
 
 namespace mapgen {
 template <typename CARule>
-class CellularAutomaton : public MapGenerator {
+class CellularAutomaton final : public MapGenerator {
   public:
     // sets rule to use the default constructor if none is specified
     CellularAutomaton(mg_util::Random & r, int generations, CARule rule = CARule())

@@ -11,7 +11,7 @@
 
 namespace mapgen {
 // randomizes every tile
-class Randomizer : public MapGenerator {
+class Randomizer final : public MapGenerator {
   public:
     // constructor, chance should be probability that a tile will be Ground
     Randomizer(mg_util::Random & r, double chance)

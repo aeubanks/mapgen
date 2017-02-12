@@ -12,7 +12,7 @@ namespace mapgen {
 // MapGenerator that fills in sections, determined by fill_(map, section) where
 // section isa vector<Coord2D>
 template <class Fill>
-class SectionRemover : public MapGenerator {
+class SectionRemover final : public MapGenerator {
   public:
     SectionRemover(mg_util::Random & r, MapTileType type_to_fill,
                    MapTileType type_to_fill_with, Fill fill = Fill())

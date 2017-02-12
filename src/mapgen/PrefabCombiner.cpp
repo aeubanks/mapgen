@@ -1,5 +1,6 @@
 #include "PrefabCombiner.hpp"
 
+#include <sstream>
 #include <utility>
 #include <fstream>
 #include <iterator>
@@ -7,9 +8,7 @@
 #include <map>
 #include <tuple>
 
-// #include <boost/functional/hash.hpp>
-
-#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/include/support_multi_pass.hpp>
 #include <boost/spirit/include/classic_position_iterator.hpp>
 
@@ -55,16 +54,28 @@ struct std::less<mapgen::Map> {
 namespace mapgen {
 
 std::vector<Map> parseRooms(const std::string & roomsFileName) {
-    namespace qi = boost::spirit::qi;
+    namespace x3 = boost::spirit::x3;
+
+    std::ifstream inFile(roomsFileName);
+    if (!inFile) {
+        throw mg_util::mg_error("couldn't open file to parse rooms");
+    }
 
     using FileInIterator = std::istreambuf_iterator<char>;
-    std::ifstream inFile(roomsFileName);
+    FileInIterator fileIt(inFile);
 
-    using PositionIterator = boost::spirit::classic::position_iterator2<boost::spirit::multi_pass<FileInIterator>>;
-    PositionIterator posFirst(boost::spirit::make_default_multi_pass(FileInIterator(inFile)), boost::spirit::make_default_multi_pass(FileInIterator()), roomsFileName), posLast;
+    using MultiPassIterator = boost::spirit::multi_pass<FileInIterator>;
+    MultiPassIterator mpFirst(boost::spirit::make_default_multi_pass(fileIt));
+    MultiPassIterator mpLast;
+
+    using PositionIterator = boost::spirit::classic::position_iterator2<MultiPassIterator>;
+    PositionIterator posFirst(mpFirst, mpLast, roomsFileName);
+    PositionIterator posLast;
 
     std::vector<Map> rooms;
-    auto finishMapAction = [&rooms](std::vector<std::vector<char>> & roomStr) {
+    auto finishMapAction = [&rooms](auto & ctx) {
+    //auto finishMapAction = [&rooms](std::vector<std::vector<char>> & roomStr) {
+        std::vector<std::string> roomStr = x3::_attr(ctx);
         if (roomStr.empty()) {
             throw mg_util::mg_error("empty map while parsing");
         }
@@ -80,25 +91,19 @@ std::vector<Map> parseRooms(const std::string & roomsFileName) {
         }
         Map toAdd(width, height);
 
-        Map::SizeType x = 0, y = 0;
-        for (const auto & m : roomStr) {
-            for (auto c : m) {
-                Coord2D cur{x, y};
-                toAdd[cur] = char_to_MapTileType(c);
-                ++x;
-            }
-            ++y;
-            x = 0;
+        for (auto c : toAdd.coords()) {
+            toAdd[c] = char_to_MapTileType(roomStr[c.y][c.x]);
         }
 
         rooms.emplace_back(std::move(toAdd));
     };
-    auto mapChars = qi::char_('#') | qi::char_('.') | qi::char_('+') | qi::char_('~') | qi::char_('?');
-    auto oneMap = (+((+mapChars) >> qi::eol))[finishMapAction];
+    auto mapChar = x3::char_("#.+~?");
 
-    auto parser = *(oneMap | qi::eol);
+    auto oneMap = (+((+mapChar) >> x3::eol))[finishMapAction];
 
-    bool success = qi::parse(posFirst, posLast, parser) && posFirst == posLast;
+    auto parser = *(oneMap | x3::eol);
+
+    bool success = x3::parse(posFirst, posLast, parser) && posFirst == posLast;
 
     if (!success) {
         std::stringstream ss;
@@ -287,6 +292,13 @@ static void removeDeadends(Map & map) {
 void PrefabCombiner::modify_map(Map & map) {
     // read rooms from file
     const auto parsedRooms = parseRooms(roomsFileName_);
+    if (parsedRooms.empty()) {
+        return;
+    }
+
+    mg_util::Array2D<const Map *> mapRoomSources(map.width(), map.height());
+
+
     // get all possible rooms
     const auto rooms = getAllRoomsRotationsFlips(parsedRooms, map);
     // get all connection points for each room

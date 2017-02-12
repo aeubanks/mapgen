@@ -34,10 +34,12 @@ class MapGenerator {
 
     // destructor is protected so that subclasses cannot be destroyed through a
     // pointer to the base class
-    ~MapGenerator() {}
+    virtual ~MapGenerator() {}
 };
 
-// these are all helper methods using variadic templates
+/*
+namespace {
+
 template <typename... Ts>
 void _gen(Map & map, Ts &&... args);
 
@@ -58,11 +60,15 @@ void _gen(Map & map, Ts &&... args) {
 template <>
 void _gen(Map &);
 
+}
+*/
+
 // use this to create a map that is modified by each of the MapGenerators
 template <typename... Ts>
 Map create_map(int width, int height, bool wrap, Ts &&... args) {
     Map map(width, height, wrap);
-    _gen<Ts...>(map, std::forward<Ts>(args)...);
+    (args(map), ...);
+    //_gen<Ts...>(map, std::forward<Ts>(args)...);
     return map;
 }
 }

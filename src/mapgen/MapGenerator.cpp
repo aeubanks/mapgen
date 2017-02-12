@@ -4,7 +4,9 @@
 
 #include "MapGenerator.hpp"
 
+/*
 namespace mapgen {
 template <>
 void _gen(Map &) {}
 }
+*/

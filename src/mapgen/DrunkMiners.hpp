@@ -8,7 +8,7 @@
 #include "MapGenerator.hpp"
 
 namespace mapgen {
-class DrunkMiners : public MapGenerator {
+class DrunkMiners final : public MapGenerator {
   public:
     DrunkMiners(mg_util::Random & r, double spawn_prob, int neighbor_ground_limit)
         : MapGenerator(r), spawn_prob_(spawn_prob),

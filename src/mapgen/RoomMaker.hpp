@@ -13,7 +13,7 @@
 
 namespace mapgen {
 template <class MakeRoomDecider>
-class RoomMaker : public MapGenerator {
+class RoomMaker final : public MapGenerator {
   public:
     RoomMaker(mg_util::Random & r, int tries, int min_width, int max_width,
               int min_height, int max_height,

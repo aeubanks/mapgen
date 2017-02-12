@@ -8,7 +8,7 @@
 #include "MapGenerator.hpp"
 
 namespace mapgen {
-class DiamondSquare : public MapGenerator {
+class DiamondSquare final : public MapGenerator {
   public:
     DiamondSquare(mg_util::Random & r, double smoothness);
 
