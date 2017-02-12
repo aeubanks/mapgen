@@ -8,7 +8,8 @@ extern std::ostream * os;
 
 template<typename... Ts>
 void info(Ts... ts) {
-    ((*os << ts), ...);
+    (*os << ... << ts);
+    //((*os << ts), ...);
     /*
     auto i = {(*os << ts, 0)...};
     (void) i;
@@ -18,7 +19,8 @@ void info(Ts... ts) {
 
 template<typename... Ts>
 void error(Ts... ts) {
-    ((*os << ts), ...);
+    (*os << ... << ts);
+    //((*os << ts), ...);
     /*
     auto i = {(*os << ts, 0)...};
     (void) i;

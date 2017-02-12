@@ -464,6 +464,7 @@ static void sdl_main() {
                         case SDLK_ESCAPE:
                         case SDLK_q:
                             running = false;
+                            break;
                         default:
                             break;
                     }
@@ -593,19 +594,26 @@ static void gg_main() {
 
 int main(int argc, char ** argv) {
     std::ios_base::sync_with_stdio(false);
+    /*
     std::string logFileName;
     {
         std::stringstream logFileNameSS;
         auto now = std::chrono::system_clock::now();
         auto now_c = std::chrono::system_clock::to_time_t(now);
-        logFileNameSS << std::put_time(std::localtime(&now_c), "%Y-%m-%d-%H-%M-%S");
+        auto t = std::put_time(std::localtime(&now_c), "%Y-%m-%d-%H-%M-%S");
+        logFileNameSS << t;
         logFileName = logFileNameSS.str();
     }
-    // mg_log::LogInit logInit(logFileName);
+    mg_log::LogInit logInit(logFileName);
+    */
+
     mg_log::LogInit logInit;
+
+    /*
     sdl2::SDL2Init sdl2init;
     sdl2::SDL2TTFInit sdl2ttfinit;
     sdl2::SDL2ImageInit sdl2imageinit;
+    */
 
     try {
         //std::vector<std::string> args(argv, argv + argc);
