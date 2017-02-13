@@ -1,13 +1,9 @@
-//
-// Created by Arthur Eubanks on 24/12/15.
-//
+#pragma once
 
-#ifndef MAPGEN_STOPWATCH_H
-#define MAPGEN_STOPWATCH_H
+#include "mg_util_include.hpp"
 
 #include <chrono>
 
-#include "mg_util_global.hpp"
 
 namespace mg_util {
 class Stopwatch {
@@ -28,12 +24,12 @@ class Stopwatch {
     // print now() - prev_time, then update prev_time_ to now()
     void tick_and_print_millis();
     // print now() - prev_time with a description, then update prev_time_ to now()
-    void tick_and_print_millis(string & str);
+    void tick_and_print_millis(std::string & str);
     // print now() - begin_time_, then update prev_time_ to now()
     void print_total_time_millis();
     // print now() - begin_time_ with a description, then update prev_time_ to
     // now()
-    void print_total_time_millis(string & str);
+    void print_total_time_millis(std::string & str);
     // the total time in milliseconds since the Stopwatch was constructed
     time_dif_count_t total_time();
     // the time in milliseconds since the last tick
@@ -46,4 +42,3 @@ class Stopwatch {
 };
 }
 
-#endif // MAPGEN_STOPWATCH_H

@@ -7,7 +7,7 @@
 #include "SDLSurfaceWrapper.hpp"
 
 namespace sdl2 {
-SDLTTFFontWrapper::SDLTTFFontWrapper(string file_name, int size)
+SDLTTFFontWrapper::SDLTTFFontWrapper(std::string file_name, int32_t size)
     : font_(TTF_OpenFont(file_name.c_str(), size), TTF_CloseFont) {
     if (!font_) {
         throw sdl2_error("TTF_OpenFont", TTF_GetError);
@@ -15,7 +15,7 @@ SDLTTFFontWrapper::SDLTTFFontWrapper(string file_name, int size)
 }
 
 SDLTextureWrapper
-SDLTTFFontWrapper::render_font_solid(SDLRendererWrapper & renderer, string str,
+SDLTTFFontWrapper::render_font_solid(SDLRendererWrapper & renderer, std::string str,
                                      SDL_Color color) {
     auto text = TTF_RenderText_Solid(get(), str.c_str(), color);
     if (!text) {

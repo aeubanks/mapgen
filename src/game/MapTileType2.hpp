@@ -1,9 +1,4 @@
-//
-// Created by I7 on 5/16/2016.
-//
-
-#ifndef GAME_MAPTILETYPE2_HPP
-#define GAME_MAPTILETYPE2_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -34,4 +29,3 @@ class MapTileType2 {
 };
 }
 
-#endif // GAME_MAPTILETYPE2_HPP

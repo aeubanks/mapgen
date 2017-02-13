@@ -1,7 +1,7 @@
-#ifndef MAP_GEN_COORD2D_H
-#define MAP_GEN_COORD2D_H
+#pragma once
 
-#include "mg_util_global.hpp"
+#include "mg_util_include.hpp"
+
 #include <ostream>
 
 // #include <boost/functional/hash.hpp>
@@ -81,4 +81,3 @@ struct hash<mg_util::Coord2D> {
 }
 */
 
-#endif // MAP_GEN_COORD2D_H

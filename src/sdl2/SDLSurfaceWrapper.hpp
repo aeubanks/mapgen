@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 8/1/16.
-//
+#pragma once
 
-#ifndef MAPGEN_SDLSURFACEWRAPPER_HPP
-#define MAPGEN_SDLSURFACEWRAPPER_HPP
-
-#include "sdl2_global.hpp"
+#include "sdl2_include.hpp"
 
 #include "mapgen/Map.hpp"
 
@@ -23,19 +18,19 @@ class SDLSurfaceWrapper {
     //		static void fill_rect(SDL_Surface * surface, Uint32 color, SDL_Rect
     //rect);
 
-    SDLSurfaceWrapper(std::vector<unsigned char> & pixels, int width, int height);
-    SDLSurfaceWrapper(std::vector<unsigned char> && pixels, int width, int height);
+    SDLSurfaceWrapper(std::vector<unsigned char> & pixels, int32_t width, int32_t height);
+    SDLSurfaceWrapper(std::vector<unsigned char> && pixels, int32_t width, int32_t height);
     // create a surface from a map
-    SDLSurfaceWrapper(mapgen::Map & map, int tile_size = 1);
+    SDLSurfaceWrapper(mapgen::Map & map, int32_t tile_size = 1);
     SDLSurfaceWrapper(SDL_Surface * surface);
-    SDLSurfaceWrapper(string file_name);
+    SDLSurfaceWrapper(std::string file_name);
 
     // the underlying SDL_Surface *
     SDL_Surface * get();
 
     // the width/height of the surface
-    int width();
-    int height();
+    int32_t width();
+    int32_t height();
 
     // set/get the color key
     void set_color_key(Uint8 r, Uint8 g, Uint8 b);
@@ -65,4 +60,3 @@ class SDLSurfaceWrapper {
 };
 }
 
-#endif // MAPGEN_SDLSURFACEWRAPPER_HPP

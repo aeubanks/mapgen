@@ -1,5 +1,4 @@
-#ifndef LOG_HPP
-#define LOG_HPP
+#pragma once
 
 #include <ostream>
 
@@ -49,4 +48,3 @@ private:
 
 }
 
-#endif

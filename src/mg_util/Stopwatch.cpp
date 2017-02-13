@@ -28,7 +28,7 @@ void Stopwatch::tick_and_print_millis() {
     tick();
 }
 
-void Stopwatch::tick_and_print_millis(string & str) {
+void Stopwatch::tick_and_print_millis(std::string & str) {
     mg_log::info(str, " time: ", time(), " millis");
     tick();
 }
@@ -37,7 +37,7 @@ void Stopwatch::print_total_time_millis() {
     mg_log::info("total time: ", total_time(), " millis");
 }
 
-void Stopwatch::print_total_time_millis(string & str) {
+void Stopwatch::print_total_time_millis(std::string & str) {
     mg_log::info(str, " total time: ", total_time(), " millis");
 }
 }

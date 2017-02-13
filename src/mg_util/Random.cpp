@@ -3,8 +3,6 @@
 
 #include <chrono>
 
-#include "mg_util_global.hpp"
-
 #include "mg_log/Log.hpp"
 
 namespace mg_util {

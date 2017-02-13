@@ -1,7 +1,6 @@
-#ifndef SDL2_INIT_HPP
-#define SDL2_INIT_HPP
+#pragma once
 
-#include "sdl2/sdl2_global.hpp"
+#include "sdl2/sdl2_include.hpp"
 
 namespace sdl2 {
 class SDL2Init {
@@ -23,4 +22,3 @@ public:
 };
 }
 
-#endif

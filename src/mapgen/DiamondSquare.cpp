@@ -20,9 +20,9 @@ void DiamondSquare::modify_map(Map & map) {
     }
 
     double deviation = 1.0;
-    int width = map.width();
-    int height = map.height();
-    int inc =
+    int32_t width = map.width();
+    int32_t height = map.height();
+    int32_t inc =
         std::min(mg_util::pow2rounddown(width), mg_util::pow2rounddown(height));
 
     Array2D<double> values(width, height);
@@ -42,37 +42,37 @@ void DiamondSquare::modify_map(Map & map) {
     values_to_map(0.5, values, map);
 }
 
-void DiamondSquare::init_vals(int inc, double deviation,
+void DiamondSquare::init_vals(int32_t inc, double deviation,
                               Array2D<double> & values) {
-    for (int y = 0; y < values.height(); y += inc) {
-        for (int x = 0; x < values.width(); x += inc) {
+    for (int32_t y = 0; y < values.height(); y += inc) {
+        for (int32_t x = 0; x < values.width(); x += inc) {
             values[{x, y}] = rand_.rand_double(-deviation, deviation);
         }
     }
 }
 
-void DiamondSquare::divide(int inc, double deviation, Array2D<double> & values,
+void DiamondSquare::divide(int32_t inc, double deviation, Array2D<double> & values,
                            Map & map) {
-    for (int y = inc; y < values.height(); y += inc * 2) {
-        for (int x = inc; x < values.width(); x += inc * 2) {
+    for (int32_t y = inc; y < values.height(); y += inc * 2) {
+        for (int32_t x = inc; x < values.width(); x += inc * 2) {
             square(x, y, inc, deviation, values, map);
         }
     }
 
-    for (int y = 0; y < map.height(); y += inc * 2) {
-        for (int x = inc; x < map.width(); x += inc * 2) {
+    for (int32_t y = 0; y < map.height(); y += inc * 2) {
+        for (int32_t x = inc; x < map.width(); x += inc * 2) {
             diamond(x, y, inc, deviation, values, map);
         }
     }
 
-    for (int y = inc; y < map.height(); y += inc * 2) {
-        for (int x = 0; x < map.width(); x += inc * 2) {
+    for (int32_t y = inc; y < map.height(); y += inc * 2) {
+        for (int32_t x = 0; x < map.width(); x += inc * 2) {
             diamond(x, y, inc, deviation, values, map);
         }
     }
 }
 
-void DiamondSquare::square(int x, int y, int inc, double deviation,
+void DiamondSquare::square(int32_t x, int32_t y, int32_t inc, double deviation,
                            Array2D<double> & values, Map & map) {
     double rand_val = rand_.rand_double(-deviation, deviation);
     double average = average_of_valid_coords(
@@ -81,7 +81,7 @@ void DiamondSquare::square(int x, int y, int inc, double deviation,
     values[{x, y}] = rand_val + average;
 }
 
-void DiamondSquare::diamond(int x, int y, int inc, double deviation,
+void DiamondSquare::diamond(int32_t x, int32_t y, int32_t inc, double deviation,
                             Array2D<double> & values, Map & map) {
     double rand_val = rand_.rand_double(-deviation, deviation);
     double average = average_of_valid_coords(
@@ -137,8 +137,8 @@ void DiamondSquare::scale_values(Array2D<double> & values) {
 
 void DiamondSquare::values_to_map(double threshold, Array2D<double> & values,
                                   Map & map) {
-    for (int y = 0; y < values.height(); ++y) {
-        for (int x = 0; x < values.width(); ++x) {
+    for (int32_t y = 0; y < values.height(); ++y) {
+        for (int32_t x = 0; x < values.width(); ++x) {
             double val = values[{x, y}];
             bool above_thres = val >= threshold;
             MapTileType type = above_thres ? MapTileType::Ground : MapTileType::Wall;

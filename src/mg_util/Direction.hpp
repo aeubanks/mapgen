@@ -1,5 +1,6 @@
-#ifndef DIRECTION_HPP
-#define DIRECTION_HPP
+#pragma once
+
+#include "mg_util_include.hpp"
 
 #include "Coord2D.hpp"
 
@@ -30,4 +31,3 @@ mg_util::Coord2D & operator+=(mg_util::Coord2D & coord, mg_util::Direction dir);
 mg_util::Coord2D operator+(mg_util::Coord2D coord, mg_util::Direction dir);
 mg_util::Coord2D operator+(mg_util::Direction dir, mg_util::Coord2D coord);
 
-#endif

@@ -9,7 +9,7 @@
 #include "mg_util/text_processing.hpp"
 
 namespace mapgen {
-static string map_tile_names[] = {
+static std::string map_tile_names[] = {
     "None",
     "Connection",
     "Wall",
@@ -21,7 +21,7 @@ static string map_tile_names[] = {
     "Door",
 };
 
-string MapTileType_to_string(MapTileType tile) {
+std::string MapTileType_to_string(MapTileType tile) {
     return map_tile_names[static_cast<int>(tile)];
 }
 

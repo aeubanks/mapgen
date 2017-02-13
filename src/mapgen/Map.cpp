@@ -184,16 +184,16 @@ Map::CountType Map::num_neighbors_of_type_von_neumann(MapTileType type,
     return num_neighbors_of_type_von_neumann(type, coord, 1);
 }
 
-vector<Coord2D> Map::find_section_von_neumann(Coord2D coord) const {
+std::vector<Coord2D> Map::find_section_von_neumann(Coord2D coord) const {
     return find_section_helper(coord, &Map::neighbors_von_neumann);
 }
 
-vector<Coord2D> Map::find_section_moore(Coord2D coord) const {
+std::vector<Coord2D> Map::find_section_moore(Coord2D coord) const {
     return find_section_helper(coord, &Map::neighbors_moore);
 }
 
-vector<Coord2D>
-Map::find_section_helper(Coord2D coord, vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) const {
+std::vector<Coord2D>
+Map::find_section_helper(Coord2D coord, std::vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) const {
     if constexpr (DEBUG) {
         if (!in_bounds(coord)) {
             mg_log::error("invalid coord in Map::find_section_helper[]");
@@ -201,11 +201,11 @@ Map::find_section_helper(Coord2D coord, vector<Coord2D> (Map::*neighbors_func)(C
         }
     }
 
-    vector<Coord2D> ret;
+    std::vector<Coord2D> ret;
     Array2D<bool> visited(width(), height());
     auto type = operator[](coord).type;
 
-    std::stack<Coord2D, vector<Coord2D>> stack;
+    std::stack<Coord2D, std::vector<Coord2D>> stack;
     stack.push(coord);
     visited[coord] = true;
     while (!stack.empty()) {
@@ -233,7 +233,7 @@ void Map::flood_fill_moore(Coord2D coord, MapTileType flood_type) {
     flood_fill_helper(coord, flood_type, &Map::neighbors_moore);
 }
 
-void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type, vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) {
+void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type, std::vector<Coord2D> (Map::*neighbors_func)(Coord2D) const) {
     if constexpr (DEBUG) {
         if (!in_bounds(coord)) {
             mg_log::error("invalid coord in Map::flood_fill_helper[]");
@@ -249,7 +249,7 @@ void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type, vector<Coord2
 
     Array2D<bool> visited(width(), height());
 
-    std::stack<Coord2D, vector<Coord2D>> stack;
+    std::stack<Coord2D, std::vector<Coord2D>> stack;
     stack.push(coord);
     while (!stack.empty()) {
         auto cur = stack.top();
@@ -265,38 +265,26 @@ void Map::flood_fill_helper(Coord2D coord, MapTileType flood_type, vector<Coord2
     }
 }
 
-vector<Coord2D> Map::neighbors_moore(Coord2D coord) const {
+std::vector<Coord2D> Map::neighbors_moore(Coord2D coord) const {
     return neighbors_moore(coord, 1);
 }
 
-vector<Coord2D> Map::neighbors_moore(Coord2D coord, DistType dist) const {
+std::vector<Coord2D> Map::neighbors_moore(Coord2D coord, DistType dist) const {
     return neighbors_helper(coord, dist, &Map::neighbors_moore_for_each);
-    //		vector<Coord2D> ret;
-    //		auto add_to_ret = [&ret, this](Coord2D add_coord) {
-    //			ret.push_back(add_coord);
-    //		};
-    //		neighbors_moore_for_each(coord, dist, add_to_ret);
-    //		return ret;
 }
 
-vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord) const {
+std::vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord) const {
     return neighbors_von_neumann(coord, 1);
 }
 
-vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord, DistType dist) const {
+std::vector<Coord2D> Map::neighbors_von_neumann(Coord2D coord, DistType dist) const {
     return neighbors_helper(coord, dist, &Map::neighbors_von_neumann_for_each);
-    //		vector<Coord2D> ret;
-    //		auto add_to_ret = [&ret, this](Coord2D add_coord) {
-    //			ret.push_back(add_coord);
-    //		};
-    //		neighbors_von_neumann_for_each(coord, dist, add_to_ret);
-    //		return ret;
 }
 
-vector<Coord2D>
+std::vector<Coord2D>
 Map::neighbors_helper(Coord2D coord, DistType dist,
                       NeighborsForEachFuncType find_neighbors_func) const {
-    vector<Coord2D> ret;
+    std::vector<Coord2D> ret;
     auto add_to_ret = [&ret, this](Coord2D add_coord) {
         ret.push_back(add_coord);
     };
@@ -391,18 +379,18 @@ void Map::neighbors_von_neumann_weighted_for_each(
 }
 
 void Map::sections_for_each_von_neumann(
-    MapTileType type, std::function<void(Map &, vector<Coord2D> &)> f) {
+    MapTileType type, std::function<void(Map &, std::vector<Coord2D> &)> f) {
     sections_for_each_helper(type, f, &Map::find_section_von_neumann);
 }
 
 void Map::sections_for_each_moore(
-    MapTileType type, std::function<void(Map &, vector<Coord2D> &)> f) {
+    MapTileType type, std::function<void(Map &, std::vector<Coord2D> &)> f) {
     sections_for_each_helper(type, f, &Map::find_section_moore);
 }
 
 // calls f(map, section) for each section, where section isa vector<Coord2D>
 void Map::sections_for_each_helper(
-    MapTileType type, std::function<void(Map &, vector<Coord2D> &)> f,
+    MapTileType type, std::function<void(Map &, std::vector<Coord2D> &)> f,
     SectionFuncType section_func) {
     Array2D<bool> visited(width(), height());
     for (auto && item : this->coords_values()) {

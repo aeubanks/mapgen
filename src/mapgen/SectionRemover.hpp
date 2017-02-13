@@ -1,12 +1,7 @@
-//
-// Created by Arthur Eubanks on 28/12/15.
-//
-
-#ifndef MAPGEN_SECTIONREMOVER_H
-#define MAPGEN_SECTIONREMOVER_H
+#pragma once
 
 #include "MapGenerator.hpp"
-#include "mapgen_global.hpp"
+#include "mapgen_include.hpp"
 
 namespace mapgen {
 // MapGenerator that fills in sections, determined by fill_(map, section) where
@@ -30,15 +25,15 @@ class SectionRemover final : public MapGenerator {
 
 template <class Fill>
 void SectionRemover<Fill>::modify_map(Map & map) {
-    int num_sections = 0;
-    int num_sections_removed = 0;
+    int32_t num_sections = 0;
+    int32_t num_sections_removed = 0;
 
     auto & fill = fill_;
     auto type_to_fill_with = type_to_fill_with_;
 
     auto remove_if_small = [&num_sections_removed, &num_sections, &fill,
                             type_to_fill_with](Map & map_lambda,
-                                               vector<Coord2D> section) {
+                                               std::vector<Coord2D> section) {
         if (fill(map_lambda, section)) {
             auto set_to_wall = [&map_lambda, type_to_fill_with](Coord2D coord) {
                 map_lambda[coord].type = type_to_fill_with;
@@ -61,16 +56,14 @@ void SectionRemover<Fill>::modify_map(Map & map) {
 // smaller factor means larger sections remain
 class SectionRemoverSmall {
   public:
-    SectionRemoverSmall(int factor) : factor_(factor) {}
+    SectionRemoverSmall(int32_t factor) : factor_(factor) {}
 
-    bool operator()(const Map & map, vector<Coord2D> & section) {
-        return static_cast<int>(section.size()) * factor_ <
-               map.width() * map.height();
+    bool operator()(const Map & map, std::vector<Coord2D> & section) {
+        return static_cast<int32_t>(section.size()) * factor_ < map.width() * map.height();
     }
 
   private:
-    int factor_;
+    int32_t factor_;
 };
 }
 
-#endif // MAPGEN_SECTIONREMOVER_H

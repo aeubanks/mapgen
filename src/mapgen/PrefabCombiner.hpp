@@ -1,5 +1,4 @@
-#ifndef PREFAB_COMBINER_HPP
-#define PREFAB_COMBINER_HPP
+#pragma once
 
 #include "MapGenerator.hpp"
 
@@ -15,4 +14,3 @@ private:
 };
 }
 
-#endif

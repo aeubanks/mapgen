@@ -1,19 +1,16 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_TEXTPROCESSING_H
-#define MAP_GEN_TEXTPROCESSING_H
+#include "mg_util_include.hpp"
 
-#include "mg_util_global.hpp"
+#include <vector>
+#include <string>
 
 namespace mg_util {
 // sets the value pointed to by val to the value in string if it is valid
 // returns whether the string was a valid int
-bool str2int(const string & str, int * val);
-bool str2double(const string & str, double * val);
+bool str2int(const std::string & str, int64_t * val);
+bool str2double(const std::string & str, double * val);
 
-vector<string> split(const string & str, char delim);
+std::vector<std::string> split(const std::string & str, char delim);
 }
 
-#endif // MAP_GEN_TEXTPROCESSING_H

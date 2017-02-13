@@ -29,7 +29,7 @@ void MapTileType2::init() {
         }
 
         std::string name = split[0];
-        int x, y;
+        int64_t x, y;
         if (!mg_util::str2int(split[1], &x)) {
             mg_log::error("invalid x number: ", split[1]);
             throw mg_util::mg_error("");

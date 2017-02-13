@@ -1,4 +1,4 @@
-#include "sdl2_global.hpp"
+#include "sdl2_include.hpp"
 
 #include <sstream>
 

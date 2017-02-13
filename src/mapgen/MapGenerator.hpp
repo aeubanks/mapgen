@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_MAPGENERATOR_H
-#define MAP_GEN_MAPGENERATOR_H
-
-#include "mapgen_global.hpp"
+#include "mapgen_include.hpp"
 
 #include <type_traits>
 #include <utility>
@@ -65,7 +60,7 @@ void _gen(Map &);
 
 // use this to create a map that is modified by each of the MapGenerators
 template <typename... Ts>
-Map create_map(int width, int height, bool wrap, Ts &&... args) {
+Map create_map(Map::SizeType width, Map::SizeType height, bool wrap, Ts &&... args) {
     Map map(width, height, wrap);
     (args(map), ...);
     //_gen<Ts...>(map, std::forward<Ts>(args)...);
@@ -73,4 +68,3 @@ Map create_map(int width, int height, bool wrap, Ts &&... args) {
 }
 }
 
-#endif // MAP_GEN_MAPGENERATOR_H

@@ -1,16 +1,13 @@
-//
-// Created by Arthur Eubanks on 24/12/15.
-//
+#pragma once
 
-#ifndef MAPGEN_ARRAY2D_H
-#define MAPGEN_ARRAY2D_H
+#include "mg_util_include.hpp"
 
 #include <algorithm>
 #include <functional>
 #include <ostream>
+#include <vector>
 
 #include "Coord2D.hpp"
-#include "mg_util_global.hpp"
 #include "mg_log/Log.hpp"
 
 namespace mg_util {
@@ -215,12 +212,12 @@ class Array2D {
 
   private:
     SizeType width_, height_;
-    vector<T> values_;
+    std::vector<T> values_;
 
   public:
     Array2D(SizeType width, SizeType height, T init_val = T())
         : width_(width), height_(height),
-          values_(static_cast<unsigned long>(width * height), init_val) {}
+          values_(width * height, init_val) {}
 
     auto width() const { return width_; }
     auto height() const { return height_; }
@@ -302,4 +299,3 @@ std::ostream & operator<<(std::ostream & os, const Array2D<T> & arr) {
 }
 }
 
-#endif // MAPGEN_ARRAY2D_H

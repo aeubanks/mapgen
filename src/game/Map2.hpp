@@ -1,9 +1,4 @@
-//
-// Created by I7 on 5/16/2016.
-//
-
-#ifndef GAME_MAP2_HPP
-#define GAME_MAP2_HPP
+#pragma once
 
 #include "MapTileType2.hpp"
 #include "mg_util/Array2D.hpp"
@@ -24,4 +19,3 @@ class Map2 {
 };
 }
 
-#endif // GAME_MAP2_HPP

@@ -1,8 +1,0 @@
-//
-// Created by Arthur Eubanks on 16/5/16.
-//
-
-#ifndef MAPGEN_SDLGAMECONTROLLER_HPP
-#define MAPGEN_SDLGAMECONTROLLER_HPP
-
-#endif // MAPGEN_SDLGAMECONTROLLER_HPP

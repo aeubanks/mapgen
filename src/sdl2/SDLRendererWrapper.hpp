@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 10/1/16.
-//
+#pragma once
 
-#ifndef MAPGEN_SDLRENDERERWRAPPER_HPP
-#define MAPGEN_SDLRENDERERWRAPPER_HPP
-
-#include "sdl2_global.hpp"
+#include "sdl2_include.hpp"
 
 #include "SDLTextureWrapper.hpp"
 #include "SDLWindowWrapper.hpp"
@@ -49,9 +44,9 @@ class SDLRendererWrapper {
     // draw a rect using the draw color
     void draw_rect(SDL_Rect rect);
     // draw a line using the draw color
-    void draw_line(int x1, int y1, int x2, int y2);
+    void draw_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
     // draw a point using the draw color
-    void draw_point(int x, int y);
+    void draw_point(int32_t x, int32_t y);
 
     // get the current viewport
     SDL_Rect get_viewport();
@@ -67,4 +62,3 @@ class SDLRendererWrapper {
 };
 }
 
-#endif // MAPGEN_SDLRENDERERWRAPPER_HPP

@@ -1,10 +1,9 @@
 #include "mg_math.hpp"
 
-#include "mg_util_global.hpp"
 #include "mg_log/Log.hpp"
 
 namespace mg_util {
-int pow2roundup(int x) {
+int64_t pow2roundup(int64_t x) {
     if (x < 0) {
         return 0;
     }
@@ -17,14 +16,14 @@ int pow2roundup(int x) {
     return x + 1;
 }
 
-int pow2rounddown(int x) {
+int64_t pow2rounddown(int64_t x) {
     if (x <= 0) {
         return 0;
     }
     return pow2roundup((x >> 1) + 1);
 }
 
-void clamp_inc(int & x, int lo, int hi) {
+int64_t clamp_inc(int64_t x, int64_t lo, int64_t hi) {
     if constexpr (DEBUG) {
         if (lo <= hi) {
             mg_log::error("invalid arguments to clamp_inc");
@@ -32,11 +31,14 @@ void clamp_inc(int & x, int lo, int hi) {
         }
     }
     if (x < lo) {
-        x = lo;
+        return lo;
     } else if (x > hi) {
-        x = hi;
+        return hi;
     }
+    return x;
 }
 
-void clamp_exc(int & x, int lo, int hi) { clamp_inc(x, lo, hi - 1); }
+int64_t clamp_exc(int64_t x, int64_t lo, int64_t hi) {
+    return clamp_inc(x, lo, hi - 1);
+}
 }

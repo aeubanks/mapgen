@@ -19,7 +19,7 @@ SDL2Init::~SDL2Init() {
 }
 
 SDL2TTFInit::SDL2TTFInit() {
-    int img_init = IMG_INIT_PNG;
+    auto img_init = IMG_INIT_PNG;
     auto not_init = IMG_Init(img_init) ^ img_init;
     if (not_init != 0) {
         mg_log::error("IMG_Init failed on flags ", not_init);

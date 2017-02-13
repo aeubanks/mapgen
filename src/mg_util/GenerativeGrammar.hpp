@@ -1,12 +1,13 @@
-#ifndef GENERATIVE_GRAMMAR_HPP
-#define GENERATIVE_GRAMMAR_HPP
+#pragma once
+
+#include "mg_util_include.hpp"
 
 #include <vector>
 #include <map>
 #include <tuple>
 
-#include <mg_util/Random.hpp>
-#include <mg_util/WeightedSet.hpp>
+#include "Random.hpp"
+#include "WeightedSet.hpp"
 
 namespace mg_util {
 
@@ -42,4 +43,3 @@ private:
 
 }
 
-#endif

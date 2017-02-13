@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 10/1/16.
-//
+#pragma once
 
-#ifndef MAPGEN_SDLTEXTUREWRAPPER_HPP
-#define MAPGEN_SDLTEXTUREWRAPPER_HPP
-
-#include "sdl2_global.hpp"
+#include "sdl2_include.hpp"
 
 #include "SDLRendererWrapper.hpp"
 #include "SDLSurfaceWrapper.hpp"
@@ -24,8 +19,8 @@ class SDLTextureWrapper {
     //surface);
 
     // width/height of texture
-    int width();
-    int height();
+    int32_t width();
+    int32_t height();
 
     // set/unset/get color modulation of texture
     void set_color_mod(Uint8 r, Uint8 g, Uint8 b);
@@ -48,4 +43,3 @@ class SDLTextureWrapper {
 };
 }
 
-#endif // MAPGEN_SDLTEXTUREWRAPPER_HPP

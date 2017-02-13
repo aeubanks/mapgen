@@ -37,12 +37,12 @@
 
 static mapgen::Map some_map() {
     using namespace mapgen;
-    int width = 40;
-    int height = 40;
+    int32_t width = 40;
+    int32_t height = 40;
     double ground_chance = 0.45;
-    int generations = 3;
-    int alive = 4;
-    int dead = 4;
+    int32_t generations = 3;
+    int32_t alive = 4;
+    int32_t dead = 4;
     mg_util::Random rand;
 
     Randomizer randomizer(rand, ground_chance);
@@ -55,8 +55,8 @@ static mapgen::Map some_map() {
 }
 
 static void sdl_main2() {
-    int window_width = 800;
-    int window_height = 600;
+    int32_t window_width = 800;
+    int32_t window_height = 600;
 
     sdl2::SDLWindowWrapper window("mapgen window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
@@ -83,7 +83,7 @@ static void sdl_main2() {
         {128, 0, 64, 205},
         {196, 0, 64, 205},
     };
-    int clips_idx = 0;
+    int32_t clips_idx = 0;
 
     sdl2::SDLTTFFontWrapper font("resources/lazy.ttf", 28);
     auto text_texture = font.render_font_solid(renderer, "HELLO!", {0, 0xFF / 3, 0xFF / 2, 0xFF});
@@ -94,8 +94,8 @@ static void sdl_main2() {
 
     bool running = true;
 
-    int rect_x = 0, rect_y = 0;
-    int move_dist = 5;
+    int32_t rect_x = 0, rect_y = 0;
+    int32_t move_dist = 5;
     Uint8 r_mod = 0xFF;
     Uint8 g_mod = 0xFF;
     Uint8 b_mod = 0xFF;
@@ -111,7 +111,7 @@ static void sdl_main2() {
     auto mouse_texture = font.render_font_solid(renderer, mouse_str, {0, 0, 0, 0xFF});
     auto mouse_pos_texture = font.render_font_solid(renderer, mouse_str, {0, 0, 0, 0xFF});
 
-    int k;
+    int32_t k;
     SDL_GetKeyboardState(&k);
 
     while (running) {
@@ -123,7 +123,7 @@ static void sdl_main2() {
                     running = false;
                     break;
                 case SDL_MOUSEMOTION: {
-                    int mouse_x, mouse_y;
+                    int32_t mouse_x, mouse_y;
                     SDL_GetMouseState(&mouse_x, &mouse_y);
                     std::stringstream ss;
                     ss << mouse_x << ", " << mouse_y;
@@ -205,7 +205,7 @@ static void sdl_main2() {
             mouse_pos_texture = font.render_font_solid(renderer, mouse_pos_str, {0, 0, 0, 0xFF});
         }
 
-        for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+        for (int32_t i = 0; i < SDL_NumJoysticks(); ++i) {
             if (SDL_IsGameController(i)) {
                 static bool printed_controller = false;
                 if (!printed_controller) {
@@ -216,8 +216,8 @@ static void sdl_main2() {
                 auto ctrl = SDL_GameControllerOpen(i);
                 // auto joy =
                 SDL_GameControllerGetJoystick(ctrl);
-                auto x = static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTX));
-                auto y = static_cast<int32_t>(SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTY));
+                int32_t x = SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTX);
+                int32_t y = SDL_GameControllerGetAxis(ctrl, SDL_CONTROLLER_AXIS_LEFTY);
                 auto x_norm = static_cast<double>(x) / (0x10000 >> 1);
                 auto y_norm = static_cast<double>(y) / (0x10000 >> 1);
                 auto scale = 1.0;
@@ -271,16 +271,16 @@ static void sdl_main2() {
 }
 
 static void ca_main() {
-    int width = 40;
-    int height = 40;
+    int32_t width = 40;
+    int32_t height = 40;
     double ground_chance = 0.45;
 
-    std::string line(static_cast<unsigned long>(width), '-');
+    std::string line(width, '-');
 
     mg_util::Stopwatch time;
     mg_util::Random rand;
 
-    std::vector<std::pair<int, int>> alive_dead_pairs{
+    std::vector<std::pair<int32_t, int32_t>> alive_dead_pairs{
         {3, 4},
         {4, 3},
         {4, 4},
@@ -288,13 +288,13 @@ static void ca_main() {
         {5, 3},
     };
 
-    std::vector<int> generation_vec{3};
+    std::vector<int32_t> generation_vec{3};
     std::vector<bool> wrap_vec{false, true};
-    int repeat_count = 1;
+    int32_t repeat_count = 1;
 
     for (auto alive_dead : alive_dead_pairs) {
-        int alive = alive_dead.first;
-        int dead = alive_dead.second;
+        auto alive = alive_dead.first;
+        auto dead = alive_dead.second;
 
         mg_log::info(line);
         mg_log::info("alive: ", alive, ", dead: ", dead);
@@ -305,7 +305,7 @@ static void ca_main() {
             for (auto wrap : wrap_vec) {
                 mg_log::info("wrap: ", wrap);
                 mg_log::info(line);
-                for (int i = 0; i < repeat_count; ++i) {
+                for (int32_t i = 0; i < repeat_count; ++i) {
                     using namespace mapgen;
                     Randomizer randomizer(rand, ground_chance);
                     RoomMaker<MakeRoomDeciderAlways> room_maker(rand, 3, width / 10, width / 5, height / 10, height / 5);
@@ -316,8 +316,8 @@ static void ca_main() {
                     auto map = create_map(width, height, false, randomizer, room_maker, ca, section_remover, wall_remover);
                     mg_log::info(map);
 
-                    int num_walls = map.num_tiles_of_type(MapTileType::Wall);
-                    int num_ground = map.num_tiles_of_type(MapTileType::Ground);
+                    int32_t num_walls = map.num_tiles_of_type(MapTileType::Wall);
+                    int32_t num_ground = map.num_tiles_of_type(MapTileType::Ground);
                     mg_log::info("num wall:   ", num_walls);
                     mg_log::info("num ground: ", num_ground);
                     time.tick_and_print_millis();
@@ -346,7 +346,7 @@ static void png_main() {
     auto map = some_map();
     mg_log::info(map);
 
-    int tile_size = 4;
+    int32_t tile_size = 4;
 
     mappng::map_to_png("test.png", map, tile_size);
 }
@@ -361,18 +361,18 @@ static std::ostream & operator<<(std::ostream & os, const b2Vec2 & vec) {
     return os;
 }
 
-static constexpr int Box2DToPixelsRatio = 32;
+static constexpr int32_t Box2DToPixelsRatio = 32;
 static constexpr float32 PixelsToBox2DRatio = 1.0f / static_cast<float32>(Box2DToPixelsRatio);
 
 static mapgen::Coord2D box2d_to_pixels(float32 x, float32 y) {
-    return mapgen::Coord2D(static_cast<int>(x * Box2DToPixelsRatio), static_cast<int>(y * Box2DToPixelsRatio));
+    return mapgen::Coord2D(x * Box2DToPixelsRatio, y * Box2DToPixelsRatio);
 }
 
 static mapgen::Coord2D box2d_to_pixels(const b2Vec2 & v) {
     return box2d_to_pixels(v.x, v.y);
 }
 
-static b2Vec2 pixels_to_box2d(int x, int y) {
+static b2Vec2 pixels_to_box2d(int32_t x, int32_t y) {
     return b2Vec2(static_cast<float32>(x) * PixelsToBox2DRatio, static_cast<float32>(y) * PixelsToBox2DRatio);
 }
 
@@ -381,11 +381,11 @@ static b2Vec2 pixels_to_box2d(const mapgen::Coord2D & c) {
 }
 
 static void sdl_main() {
-    constexpr int tile_size_pixels = 32;
-    constexpr int player_size_pixels = 25;
+    constexpr int32_t tile_size_pixels = 32;
+    constexpr int32_t player_size_pixels = 25;
 
-    int window_width = 800;
-    int window_height = 600;
+    int32_t window_width = 800;
+    int32_t window_height = 600;
 
     sdl2::SDLWindowWrapper window("mapgen window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
@@ -446,7 +446,7 @@ static void sdl_main() {
 
     bool running = true;
 
-    uint64_t frame_count = 0;
+    int64_t frame_count = 0;
     while (running) {
         while (SDL_PollEvent(&event) != 0) {
             switch (event.type) {
@@ -561,8 +561,8 @@ static void gg_main() {
     gg.setCurrent({F});
     gg.addRule(F, {F, L, F, R, F, R, F, L, F});
 
-    uint32_t width = 3, height = 1;
-    for (int i = 0; i < 7; ++i) {
+    int32_t width = 3, height = 1;
+    for (int32_t i = 0; i < 7; ++i) {
         gg.step();
         width = width * 3 - 2;
         height *= 3;

@@ -1,20 +1,16 @@
-//
-// Created by Arthur Eubanks on 24/12/15.
-//
+#pragma once
 
-#ifndef MAPGEN_MATH_H
-#define MAPGEN_MATH_H
+#include "mg_util_include.hpp"
 
 namespace mg_util {
 // returns the power of two that is at least x
-int pow2roundup(int x);
+int64_t pow2roundup(int64_t x);
 // returns the power of two that is at most x
-int pow2rounddown(int x);
+int64_t pow2rounddown(int64_t x);
 
 // clamp x so that it is at least lo and at most hi
-void clamp_inc(int & x, int lo, int hi);
+int64_t clamp_inc(int64_t x, int64_t lo, int64_t hi);
 // clamp x so that it is at least lo and at most hi - 1
-void clamp_exc(int & x, int lo, int hi);
+int64_t clamp_exc(int64_t x, int64_t lo, int64_t hi);
 }
 
-#endif // MAPGEN_MATH_H

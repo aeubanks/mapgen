@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 29/12/15.
-//
+#pragma once
 
-#ifndef MAPGEN_ROOMMAKER_HPP
-#define MAPGEN_ROOMMAKER_HPP
-
-#include "mapgen_global.hpp"
+#include "mapgen_include.hpp"
 
 #include "Map.hpp"
 #include "MapGenerator.hpp"
@@ -15,8 +10,8 @@ namespace mapgen {
 template <class MakeRoomDecider>
 class RoomMaker final : public MapGenerator {
   public:
-    RoomMaker(mg_util::Random & r, int tries, int min_width, int max_width,
-              int min_height, int max_height,
+    RoomMaker(mg_util::Random & r, Map::SizeType tries, Map::SizeType min_width, Map::SizeType max_width,
+              Map::SizeType min_height, Map::SizeType max_height,
               MakeRoomDecider make_room_decider = MakeRoomDecider())
         : MapGenerator(r), tries_(tries), min_width_(min_width),
           max_width_(max_width), min_height_(min_height), max_height_(max_height),
@@ -26,9 +21,9 @@ class RoomMaker final : public MapGenerator {
 
   private:
     // the number of tries
-    int tries_;
+    int32_t tries_;
     // the min/max width/height of each room
-    int min_width_, max_width_, min_height_, max_height_;
+    Map::SizeType min_width_, max_width_, min_height_, max_height_;
     // RoomMaker will decide whether to make a room or not based on
     // make_room_decider_(map, x_start, y_start, width, height)
     MakeRoomDecider make_room_decider_;
@@ -43,16 +38,16 @@ void RoomMaker<MakeRoomDecider>::modify_map(Map & map) {
         }
     }
 
-    for (int cur_try = 0; cur_try < tries_; ++cur_try) {
-        int width = rand_.rand_int_exc(min_width_, max_width_ + 1);
-        int height = rand_.rand_int_exc(min_height_, max_height_ + 1);
-        int x_start = rand_.rand_int_exc(0, map.width() - width);
-        int y_start = rand_.rand_int_exc(0, map.height() - height);
+    for (int32_t cur_try = 0; cur_try < tries_; ++cur_try) {
+        Map::SizeType width = rand_.rand_int_exc(min_width_, max_width_ + 1);
+        Map::SizeType height = rand_.rand_int_exc(min_height_, max_height_ + 1);
+        Map::SizeType x_start = rand_.rand_int_exc(0, map.width() - width);
+        Map::SizeType y_start = rand_.rand_int_exc(0, map.height() - height);
         if (make_room_decider_(map, x_start, y_start, width, height)) {
-            for (int j = 0; j < height; ++j) {
-                for (int i = 0; i < width; ++i) {
-                    int x = i + x_start;
-                    int y = j + y_start;
+            for (Map::SizeType j = 0; j < height; ++j) {
+                for (Map::SizeType i = 0; i < width; ++i) {
+                    Map::SizeType x = i + x_start;
+                    Map::SizeType y = j + y_start;
                     map[{x, y}].type = MapTileType::Ground;
                 }
             }
@@ -65,8 +60,8 @@ class MakeRoomDeciderAlways {
   public:
     MakeRoomDeciderAlways() {}
 
-    bool operator()(Map & /*map*/, int /*x*/, int /*y*/, int /*width*/,
-                    int /*height*/) {
+    bool operator()(Map & /*map*/, Map::SizeType /*x*/, Map::SizeType /*y*/, Map::SizeType /*width*/,
+                    Map::SizeType /*height*/) {
         return true;
     }
 };
@@ -77,13 +72,13 @@ class MakeRoomDeciderNoOverlap {
   public:
     MakeRoomDeciderNoOverlap() : MakeRoomDeciderNoOverlap(0) {}
 
-    MakeRoomDeciderNoOverlap(int border)
+    MakeRoomDeciderNoOverlap(Map::SizeType border)
         : MakeRoomDeciderNoOverlap(border, border) {}
 
-    MakeRoomDeciderNoOverlap(int xborder, int yborder)
+    MakeRoomDeciderNoOverlap(Map::SizeType xborder, Map::SizeType yborder)
         : xborder_(xborder), yborder_(yborder) {}
 
-    bool operator()(Map & map, int x_start, int y_start, int width, int height) {
+    bool operator()(Map & map, Map::SizeType x_start, Map::SizeType y_start, Map::SizeType width, Map::SizeType height) {
         if constexpr (DEBUG) {
             if (xborder_ < 0 || yborder_ < 0) {
                 mg_log::error("invalid xborder/yborder: ", xborder_, ", ", yborder_);
@@ -91,18 +86,18 @@ class MakeRoomDeciderNoOverlap {
             }
         }
 
-        int x_start_with_border = x_start - xborder_;
-        int y_start_with_border = y_start - yborder_;
-        int x_end_with_border = x_start + width + xborder_;
-        int y_end_with_border = y_start + height + yborder_;
+        Map::SizeType x_start_with_border = x_start - xborder_;
+        Map::SizeType y_start_with_border = y_start - yborder_;
+        Map::SizeType x_end_with_border = x_start + width + xborder_;
+        Map::SizeType y_end_with_border = y_start + height + yborder_;
 
-        mg_util::clamp_inc(x_start_with_border, 0, map.width());
-        mg_util::clamp_inc(y_start_with_border, 0, map.width());
-        mg_util::clamp_inc(x_end_with_border, 0, map.width());
-        mg_util::clamp_inc(y_end_with_border, 0, map.width());
+        x_start_with_border = mg_util::clamp_inc(x_start_with_border, 0, map.width());
+        y_start_with_border = mg_util::clamp_inc(y_start_with_border, 0, map.width());
+        x_end_with_border = mg_util::clamp_inc(x_end_with_border, 0, map.width());
+        y_end_with_border = mg_util::clamp_inc(y_end_with_border, 0, map.width());
 
-        for (int y = y_start_with_border; y < y_end_with_border; ++y) {
-            for (int x = x_start_with_border; x < x_end_with_border; ++x) {
+        for (Map::SizeType y = y_start_with_border; y < y_end_with_border; ++y) {
+            for (Map::SizeType x = x_start_with_border; x < x_end_with_border; ++x) {
                 if (map[{x, y}].type == MapTileType::Ground) {
                     return false;
                 }
@@ -113,8 +108,7 @@ class MakeRoomDeciderNoOverlap {
     }
 
   private:
-    int xborder_, yborder_;
+    Map::SizeType xborder_, yborder_;
 };
 }
 
-#endif // MAPGEN_ROOMMAKER_HPP

@@ -1,11 +1,11 @@
-#ifndef WEIGHTED_SUM_HPP
-#define WEIGHTED_SUM_HPP
+#pragma once
+
+#include "mg_util/mg_util_include.hpp"
 
 #include <vector>
 #include <tuple>
 
-#include <mg_util/mg_util_global.hpp>
-#include <mg_util/Random.hpp>
+#include "mg_util/Random.hpp"
 
 namespace mg_util {
 
@@ -88,4 +88,3 @@ private:
 
 }
 
-#endif

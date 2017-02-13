@@ -1,9 +1,4 @@
-//
-// Created by Arthur Eubanks on 24/12/15.
-//
-
-#ifndef MAPGEN_DIAMONDSQUARE_H
-#define MAPGEN_DIAMONDSQUARE_H
+#pragma once
 
 #include "MapGenerator.hpp"
 
@@ -16,16 +11,16 @@ class DiamondSquare final : public MapGenerator {
 
   private:
     // initializes the values, x and y incrementing by inc, with the deviation
-    void init_vals(int inc, double deviation, Array2D<double> & values);
+    void init_vals(int32_t inc, double deviation, Array2D<double> & values);
     // call square and diamond on the correct coords using inc
-    void divide(int inc, double deviation, Array2D<double> & values, Map & map);
+    void divide(int32_t inc, double deviation, Array2D<double> & values, Map & map);
     // averages the square with length 2 * inc with x, y as the center's corner
     // values, adds a random deviation, and sets map[x, y]
-    void square(int x, int y, int inc, double deviation, Array2D<double> & values,
+    void square(int32_t x, int32_t y, int32_t inc, double deviation, Array2D<double> & values,
                 Map & map);
     // averages the diamond with length 2 * inc with x, y as the center's corner
     // values, adds a random deviation, and sets map[x, y]
-    void diamond(int x, int y, int inc, double deviation, Array2D<double> & values,
+    void diamond(int32_t x, int32_t y, int32_t inc, double deviation, Array2D<double> & values,
                  Map & map);
     // returns the average of the 4 coords, ignoring any out of bounds coords
     double average_of_valid_coords(Coord2D a, Coord2D b, Coord2D c, Coord2D d,
@@ -41,4 +36,3 @@ class DiamondSquare final : public MapGenerator {
 };
 }
 
-#endif // MAPGEN_DIAMONDSQUARE_H

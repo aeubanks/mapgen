@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_DISJOINTSET_H
-#define MAP_GEN_DISJOINTSET_H
-
-#include "mapgen/mapgen_global.hpp"
+#include "mapgen/mapgen_include.hpp"
 
 #include <unordered_map>
 
@@ -32,7 +27,7 @@ class DisjointSet {
     class Node {
       public:
         Node & parent;
-        int rank;
+        int32_t rank;
 
         Node() : parent(*this), rank(0) {}
 
@@ -49,4 +44,3 @@ class DisjointSet {
 };
 }
 
-#endif // MAP_GEN_DISJOINTSET_H

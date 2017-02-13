@@ -4,15 +4,13 @@
 
 #include "SDLWindowWrapper.hpp"
 
-#include "mg_util/mg_util_global.hpp"
-
 namespace sdl2 {
-SDLWindowWrapper::SDLWindowWrapper(std::string title, int width, int height)
+SDLWindowWrapper::SDLWindowWrapper(std::string title, int32_t width, int32_t height)
     : SDLWindowWrapper(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                        width, height, SDL_WINDOW_SHOWN) {}
 
-SDLWindowWrapper::SDLWindowWrapper(std::string title, int x, int y, int width,
-                                   int height, Uint32 flags)
+SDLWindowWrapper::SDLWindowWrapper(std::string title, int32_t x, int32_t y, int32_t width,
+                                   int32_t height, Uint32 flags)
     : window_(SDL_CreateWindow(title.c_str(), x, y, width, height, flags),
               SDL_DestroyWindow) {
     if (!window_) {
@@ -20,14 +18,14 @@ SDLWindowWrapper::SDLWindowWrapper(std::string title, int x, int y, int width,
     }
 }
 
-int SDLWindowWrapper::width() {
-    int w;
+int32_t SDLWindowWrapper::width() {
+    int32_t w;
     SDL_GetWindowSize(get(), &w, NULL);
     return w;
 }
 
-int SDLWindowWrapper::height() {
-    int h;
+int32_t SDLWindowWrapper::height() {
+    int32_t h;
     SDL_GetWindowSize(get(), NULL, &h);
     return h;
 }

@@ -1,11 +1,6 @@
-//
-// Created by Arthur Eubanks on 9/1/16.
-//
+#pragma once
 
-#ifndef MAPGEN_SDLWINDOWWRAPPER_HPP
-#define MAPGEN_SDLWINDOWWRAPPER_HPP
-
-#include "sdl2_global.hpp"
+#include "sdl2_include.hpp"
 
 #include <memory>
 
@@ -13,13 +8,13 @@ namespace sdl2 {
 class SDLWindowWrapper {
   public:
     // create a window with the given parameters
-    SDLWindowWrapper(std::string title, int width, int height);
-    SDLWindowWrapper(std::string title, int x, int y, int width, int height,
+    SDLWindowWrapper(std::string title, int32_t width, int32_t height);
+    SDLWindowWrapper(std::string title, int32_t x, int32_t y, int32_t width, int32_t height,
                      Uint32 flags);
 
     // the width/height of the window
-    int width();
-    int height();
+    int32_t width();
+    int32_t height();
 
     // the underlying SDL_Window *
     SDL_Window * get();
@@ -29,4 +24,3 @@ class SDLWindowWrapper {
 };
 }
 
-#endif // MAPGEN_SDLWINDOWWRAPPER_HPP

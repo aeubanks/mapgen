@@ -31,9 +31,9 @@ static png::rgb_pixel getPixelForType(mapgen::MapTileType type) {
     }
 }
 
-void map_to_png(const std::string & file_name, const mapgen::Map & map, int tile_size) {
-    int width = map.width();
-    int height = map.height();
+void map_to_png(const std::string & file_name, const mapgen::Map & map, int32_t tile_size) {
+    int32_t width = map.width();
+    int32_t height = map.height();
     png::image<png::rgb_pixel> image(width * tile_size, height * tile_size);
 
     for (auto && pair : map.coords_values()) {
@@ -41,9 +41,9 @@ void map_to_png(const std::string & file_name, const mapgen::Map & map, int tile
         //png::rgb_pixel pixel{val, val, val};
         png::rgb_pixel pixel = getPixelForType(pair.value.type);
 
-        for (int j = 0; j < tile_size; ++j) {
+        for (int32_t j = 0; j < tile_size; ++j) {
             auto y = pair.coord.y * tile_size + j;
-            for (int i = 0; i < tile_size; ++i) {
+            for (int32_t i = 0; i < tile_size; ++i) {
                 auto x = pair.coord.x * tile_size + i;
                 image.set_pixel(x, y, pixel);
             }

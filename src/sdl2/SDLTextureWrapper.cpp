@@ -28,14 +28,14 @@ SDLTextureWrapper::SDLTextureWrapper(SDLRendererWrapper & renderer,
                                      SDLSurfaceWrapper && surface)
     : SDLTextureWrapper(renderer, surface) {}
 
-int SDLTextureWrapper::width() {
-    int w;
+int32_t SDLTextureWrapper::width() {
+    int32_t w;
     SDL_QueryTexture(get(), NULL, NULL, &w, NULL);
     return w;
 }
 
-int SDLTextureWrapper::height() {
-    int h;
+int32_t SDLTextureWrapper::height() {
+    int32_t h;
     SDL_QueryTexture(get(), NULL, NULL, NULL, &h);
     return h;
 }

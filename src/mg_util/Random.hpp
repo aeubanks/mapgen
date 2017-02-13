@@ -1,9 +1,6 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_RANDOM_H
-#define MAP_GEN_RANDOM_H
+#include "mg_util_include.hpp"
 
 #include <random>
 
@@ -47,4 +44,3 @@ class Random {
 };
 }
 
-#endif // MAP_GEN_RANDOM_H

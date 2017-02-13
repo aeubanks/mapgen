@@ -1,13 +1,8 @@
-//
-// Created by Arthur Eubanks on 28/12/15.
-//
-
-#ifndef MAPGEN_RANDOMIZER_H
-#define MAPGEN_RANDOMIZER_H
+#pragma once
 
 #include "Map.hpp"
 #include "MapGenerator.hpp"
-#include "mapgen_global.hpp"
+#include "mapgen_include.hpp"
 
 namespace mapgen {
 // randomizes every tile
@@ -24,4 +19,3 @@ class Randomizer final : public MapGenerator {
 };
 }
 
-#endif // MAPGEN_RANDOMIZER_H

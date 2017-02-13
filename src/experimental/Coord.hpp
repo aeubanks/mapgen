@@ -1,5 +1,4 @@
-#ifndef MAP_GEN_COORD_H
-#define MAP_GEN_COORD_H
+#pragma once
 
 #include <cstdint>
 #include <ostream>
@@ -152,4 +151,3 @@ struct hash<mg_util::Coord<Dims>> {
 };
 }
 
-#endif

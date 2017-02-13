@@ -36,7 +36,7 @@ SDLSurfaceWrapper::SDLSurfaceWrapper(SDL_Surface * surface)
 }
 
 SDLSurfaceWrapper::SDLSurfaceWrapper(std::vector<unsigned char> & pixels,
-                                     int width, int height)
+                                     int32_t width, int32_t height)
     : pixels_(pixels),
       surface_(SDL_CreateRGBSurfaceFrom(pixels_.data(), width, height, 32,
                                         4 * width, 0, 0, 0, 0),
@@ -47,14 +47,14 @@ SDLSurfaceWrapper::SDLSurfaceWrapper(std::vector<unsigned char> & pixels,
 }
 
 SDLSurfaceWrapper::SDLSurfaceWrapper(std::vector<unsigned char> && pixels,
-                                     int width, int height)
+                                     int32_t width, int32_t height)
     : SDLSurfaceWrapper(pixels, width, height) {}
 
-SDLSurfaceWrapper::SDLSurfaceWrapper(mapgen::Map & map, int tile_size)
+SDLSurfaceWrapper::SDLSurfaceWrapper(mapgen::Map & map, int32_t tile_size)
     : SDLSurfaceWrapper(mapbytes::map_to_bytes(map, tile_size),
                         map.width() * tile_size, map.height() * tile_size) {}
 
-SDLSurfaceWrapper::SDLSurfaceWrapper(string file_name)
+SDLSurfaceWrapper::SDLSurfaceWrapper(std::string file_name)
     : pixels_(), surface_(IMG_Load(file_name.c_str()), SDL_FreeSurface) {
     if (!surface_) {
         throw sdl2_error("SDL_LoadBMP");
@@ -63,9 +63,9 @@ SDLSurfaceWrapper::SDLSurfaceWrapper(string file_name)
 
 SDL_Surface * SDLSurfaceWrapper::get() { return surface_.get(); }
 
-int SDLSurfaceWrapper::width() { return get()->h; }
+int32_t SDLSurfaceWrapper::width() { return get()->h; }
 
-int SDLSurfaceWrapper::height() { return get()->w; }
+int32_t SDLSurfaceWrapper::height() { return get()->w; }
 
 void SDLSurfaceWrapper::set_color_key(Uint8 r, Uint8 g, Uint8 b) {
     SDL_SetColorKey(get(), SDL_TRUE, SDL_MapRGB(get()->format, r, g, b));

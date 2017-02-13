@@ -1,15 +1,13 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_MAP_H
-#define MAP_GEN_MAP_H
+#include "mapgen_include.hpp"
+
+#include <functional>
+#include <ostream>
+#include <vector>
 
 #include "MapTile.hpp"
 #include "MapTileType.hpp"
-#include "mapgen_global.hpp"
-#include <functional>
-#include <ostream>
 
 namespace mapgen {
 class Map {
@@ -83,10 +81,10 @@ class Map {
     CountType num_tiles_of_type(MapTileType tile) const;
 
     // returns the neighbors of a coord, filtering out out of bound ones
-    vector<Coord2D> neighbors_moore(Coord2D coord) const;
-    vector<Coord2D> neighbors_moore(Coord2D coord, DistType dist) const;
-    vector<Coord2D> neighbors_von_neumann(Coord2D coord) const;
-    vector<Coord2D> neighbors_von_neumann(Coord2D coord, DistType dist) const;
+    std::vector<Coord2D> neighbors_moore(Coord2D coord) const;
+    std::vector<Coord2D> neighbors_moore(Coord2D coord, DistType dist) const;
+    std::vector<Coord2D> neighbors_von_neumann(Coord2D coord) const;
+    std::vector<Coord2D> neighbors_von_neumann(Coord2D coord, DistType dist) const;
 
     using NeighborsFuncType = std::function<void(Coord2D)>;
     using NeighborsWeightedFuncType = std::function<void(Coord2D, DistType)>;
@@ -108,15 +106,15 @@ class Map {
 
     // returns all coords in the section that coord is part of
     // a section is a bunch of connected tiles that have the same type
-    vector<Coord2D> find_section_moore(Coord2D coord) const;
-    vector<Coord2D> find_section_von_neumann(Coord2D coord) const;
+    std::vector<Coord2D> find_section_moore(Coord2D coord) const;
+    std::vector<Coord2D> find_section_von_neumann(Coord2D coord) const;
 
     // calls f(map, section) for each section, where section isa vector<Coord2D>
     void sections_for_each_von_neumann(
-        MapTileType type, std::function<void(Map &, vector<Coord2D> &)> f);
+        MapTileType type, std::function<void(Map &, std::vector<Coord2D> &)> f);
     // calls f(map, section) for each section, where section isa vector<Coord2D>
     void sections_for_each_moore(MapTileType type,
-                                 std::function<void(Map &, vector<Coord2D> &)> f);
+                                 std::function<void(Map &, std::vector<Coord2D> &)> f);
 
     // flood fills the section with the specified MapTileType
     void flood_fill_von_neumann(Coord2D coord, MapTileType flood_type);
@@ -128,23 +126,23 @@ class Map {
 
     // helper function for the flood_fill methods
     void flood_fill_helper(Coord2D coord, MapTileType tile,
-                           vector<Coord2D> (Map::*neighbors_func)(Coord2D) const);
+                           std::vector<Coord2D> (Map::*neighbors_func)(Coord2D) const);
 
     // helper function for the find_section methods
-    vector<Coord2D>
+    std::vector<Coord2D>
     find_section_helper(Coord2D coord,
-                        vector<Coord2D> (Map::*neighbors_func)(Coord2D)
+                        std::vector<Coord2D> (Map::*neighbors_func)(Coord2D)
                             const) const;
 
     // calls f(map, section) for each section, where section isa vector<Coord2D>
-    using SectionFuncType = vector<Coord2D> (Map::*)(Coord2D coord) const;
+    using SectionFuncType = std::vector<Coord2D> (Map::*)(Coord2D coord) const;
     void sections_for_each_helper(MapTileType type,
-                                  std::function<void(Map &, vector<Coord2D> &)> f,
+                                  std::function<void(Map &, std::vector<Coord2D> &)> f,
                                   SectionFuncType section_func);
 
     using NeighborsForEachFuncType = void (Map::*)(
         Coord2D coord, DistType dist, NeighborsFuncType neighbors_func) const;
-    vector<Coord2D>
+    std::vector<Coord2D>
     neighbors_helper(Coord2D coord, DistType dist,
                      NeighborsForEachFuncType find_neighbors_func) const;
 };
@@ -152,4 +150,3 @@ class Map {
 std::ostream & operator<<(std::ostream & os, const Map & map);
 }
 
-#endif // MAP_GEN_MAP_H

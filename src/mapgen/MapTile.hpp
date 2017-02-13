@@ -1,12 +1,8 @@
-//
-// Created by Arthur Eubanks on 20/12/15.
-//
+#pragma once
 
-#ifndef MAP_GEN_MAPTILE_H
-#define MAP_GEN_MAPTILE_H
+#include "mapgen_include.hpp"
 
 #include "MapTileType.hpp"
-#include "mapgen_global.hpp"
 
 namespace mapgen {
 // a class representing a tile on a map
@@ -18,4 +14,3 @@ class MapTile {
 };
 }
 
-#endif // MAP_GEN_MAPTILE_H

@@ -9,7 +9,7 @@
 #include "mg_log/Log.hpp"
 
 namespace mg_util {
-bool str2int(const string & str, int * val) {
+bool str2int(const std::string & str, int64_t * val) {
     if (str.empty()) {
         return false;
     }
@@ -25,12 +25,12 @@ bool str2int(const string & str, int * val) {
 
     bool valid = end == c_str + str.length();
     if (valid) {
-        *val = static_cast<int>(ret);
+        *val = ret;
     }
     return valid;
 }
 
-bool str2double(const string & str, double * val) {
+bool str2double(const std::string & str, double * val) {
     if (str.empty()) {
         return false;
     }
@@ -51,10 +51,10 @@ bool str2double(const string & str, double * val) {
     return valid;
 }
 
-vector<string> split(const string & str, char delim) {
-    vector<string> ret;
+std::vector<std::string> split(const std::string & str, char delim) {
+    std::vector<std::string> ret;
     std::stringstream ss(str);
-    string item;
+    std::string item;
     while (std::getline(ss, item, delim)) {
         ret.push_back(item);
     }

@@ -110,7 +110,7 @@ std::vector<Map> parseRooms(const std::string & roomsFileName) {
         auto failPos = posFirst.get_position();
         ss << "bad parse in " << failPos.file << " at " << failPos.line << ":" << failPos.column << "\n";
         ss << posFirst.get_currentline() << '\n';
-        for (int i = 1; i < failPos.column; ++i) {
+        for (int32_t i = 1; i < failPos.column; ++i) {
             ss << ' ';
         }
         ss << "^ around here\n";
@@ -239,7 +239,7 @@ static bool tileIsWalkable(MapTileType t) {
     return t == MapTileType::Ground || t == MapTileType::Door;
 }
 
-static void addIfPosIsWalkable(const Map & map, Coord2D pos, int & count) {
+static void addIfPosIsWalkable(const Map & map, Coord2D pos, int32_t & count) {
     if (map.in_bounds(pos)) {
         if (tileIsWalkable(map[pos].type)) {
             ++count;
@@ -247,8 +247,8 @@ static void addIfPosIsWalkable(const Map & map, Coord2D pos, int & count) {
     }
 }
 
-static int numWalkableNeighbors(const Map & map, Coord2D pos) {
-    int count = 0;
+static int32_t numWalkableNeighbors(const Map & map, Coord2D pos) {
+    int32_t count = 0;
     addIfPosIsWalkable(map, pos + Coord2D{0, -1}, count);
     addIfPosIsWalkable(map, pos + Coord2D{0, 1}, count);
     addIfPosIsWalkable(map, pos + Coord2D{1, 0}, count);
@@ -321,7 +321,7 @@ void PrefabCombiner::modify_map(Map & map) {
         done = true;
 
         // for each (room, placement coord) pair, the number of connections between that placement of a room and the existing map
-        std::map<std::pair<const Map *, Coord2D>, uint16_t> numConnectionsForPlacement;
+        std::map<std::pair<const Map *, Coord2D>, int32_t> numConnectionsForPlacement;
         for (const auto & roomConnections : roomsAndConnections) { // loop through all possible rooms
             const auto & room = roomConnections.first;
 
@@ -333,7 +333,7 @@ void PrefabCombiner::modify_map(Map & map) {
                         continue;
                     }
                     // number of connections between existing map and current room at the placement coord
-                    uint16_t connectionCount = 0;
+                    int32_t connectionCount = 0;
                     // whether this placement is valid (tiles overlap)
                     bool valid = true;
                     for (auto roomCoord : room.coords()) { // check each coord in the room

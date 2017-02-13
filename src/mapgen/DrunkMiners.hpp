@@ -1,16 +1,11 @@
-//
-// Created by Arthur Eubanks on 31/12/15.
-//
-
-#ifndef MAPGEN_DRUNKMINERS_HPP
-#define MAPGEN_DRUNKMINERS_HPP
+#pragma once
 
 #include "MapGenerator.hpp"
 
 namespace mapgen {
 class DrunkMiners final : public MapGenerator {
   public:
-    DrunkMiners(mg_util::Random & r, double spawn_prob, int neighbor_ground_limit)
+    DrunkMiners(mg_util::Random & r, double spawn_prob, int32_t neighbor_ground_limit)
         : MapGenerator(r), spawn_prob_(spawn_prob),
           neighbor_ground_limit_(neighbor_ground_limit) {}
 
@@ -18,8 +13,7 @@ class DrunkMiners final : public MapGenerator {
 
   private:
     double spawn_prob_;
-    int neighbor_ground_limit_;
+    int32_t neighbor_ground_limit_;
 };
 }
 
-#endif // MAPGEN_DRUNKMINERS_HPP
